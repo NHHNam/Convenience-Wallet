@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const db = require('./db')
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -18,6 +20,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+db.query("SELECT * FROM account", (err, results, fields) =>{
+  if(err) throw err
+  console.log(results[0].email)
+})
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
