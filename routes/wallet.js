@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 const db = require('../models/db')
-const userController = require('../controllers/UserController')
+const walletController = require('../controllers/WalletController')
 
 /* GET users listing. */
-router.get('/', userController.index);
+router.get('/', walletController.index);
 
 module.exports = router;
