@@ -1,13 +1,26 @@
 <div id="border_login_page">
-    <form class="login-form" novalidate>
+    <form class="login-form" novalidate method="post" action="/users/login">
         <div class="header_login_form">Đăng nhập</div>
         <div class="field">
-            <label for="email">Email address</label>
-            <input type="email" class="field-input" id="email" aria-describedby="emailHelp" placeholder="Enter your email">
+            <label for="username">Username</label>
+            {{#if username}}
+            <input type="text" class="field-input" id="username" value="{{username}}" name="username" aria-describedby="emailHelp" placeholder="Enter your username">
+            {{else}}
+            <input type="text" class="field-input" id="username" name="username" aria-describedby="emailHelp" placeholder="Enter your username">
+            {{/if}}
         </div>
         <div class="field">
             <label for="password">Password</label>
-            <input type="password" class="field-input" id="password" placeholder="Enter your password">
+            {{#if password}}
+            <input type="password" class="field-input" id="password" value="{{password}}" name="password" placeholder="Enter your password">
+            {{else}}
+            <input type="password" class="field-input" id="password" name="password" placeholder="Enter your password">
+            {{/if}}
+        </div>
+        <div class="field">
+            {{#if message}}
+            <p class="error_login">{{message}}</p>
+            {{/if}}
         </div>
         <button type="submit" class="btn_login">Submit</button>
     </form>

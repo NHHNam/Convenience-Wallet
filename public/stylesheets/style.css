@@ -99,3 +99,44 @@
   background-color: rgba(0, 128, 0, 0.914);
   color: #fff;
 }
+
+.login-form .error_login{
+  color: white;
+  font-weight: 500;
+  font-size: 18px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background-color: rgba(255, 0, 0, 0.671);
+}
+
+/*======================
+  Nav page
+=======================*/
+
+.list-nav{
+  display: flex;
+  list-style: none;
+  justify-content: center;
+  padding: 10px;
+  box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.3);
+  
+}
+
+.list-nav li{
+  margin-right: 30px;
+  padding: 10px;
+  border: none;
+  outline: none;
+  transition: all 0.3 ease;
+  cursor: pointer;
+}
+
+.list-nav li:hover{
+  background-color: #39ac31;
+  color: #fff;
+}
+
+.list-nav li a{
+  text-decoration: none;
+  color: black
+}
