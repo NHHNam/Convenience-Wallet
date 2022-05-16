@@ -2,11 +2,8 @@ const db = require('../models/db')
 
 class AdminController{
     index(req, res){
-        db.query("SELECT * FROM account", (err, results, fields) =>{
-            if(err) throw err
-            let personEmail = results[0].email
-            return res.render('admin', {personEmail})
-        })
+        let username = req.session.username
+        return res.render('admin', {username})
     }
 
     // [GET] /admin/list/user_wait

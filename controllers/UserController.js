@@ -4,7 +4,8 @@ const bcrypt = require('bcrypt');
 class UserController{
     // [GET] /users/
     index(req, res){
-        return res.send('Welcome user page')
+        let username = req.session.username
+        return res.render('index', {username})
     }
     // [GET] /users/login
     login(req, res){
@@ -30,9 +31,12 @@ class UserController{
                 .then(match => {
                     if(match){
                         if(position){
-                            return res.render('admin', {username, password})
+                            req.session.username = username
+                            // req.session.
+                            return res.redirect('/admin')
                         }else{
-                            return res.render('index', {username, password})
+                            req.session.username = username
+                            return res.redirect('/users')
                         }
                     }else{
                         message = 'password is not true'

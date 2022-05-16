@@ -1,6 +1,37 @@
+{{!-- nav  --}}
 {{>navAdmin}}
+{{!-- end nav --}}
 
-<i class="fa fa-car"></i>
-<i class="fa fa-car" style="font-size:48px;"></i>
-<i class="fa fa-car" style="font-size:60px;color:red;"></i>
+{{!-- body --}}
+<h1>{{username}}</h1>
+<a href="/logout">Logout</a>
+<div class="container">
+    <div class="row m-5">
+        <div class="col-lg-6 col-sm-12">
+            <a href="">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="/images/usrs.png" alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">Manage User</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-6 col-sm-12">
+            <a href="">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="/images/withdraw_money.png" alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">Manage Withdraw Money</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+{{!-- end body --}}
+
+{{!-- footer --}}
 {{> footer}}
+{{!-- end footer --}}

@@ -2,9 +2,10 @@ var express = require('express');
 var router = express.Router();
 const db = require('../models/db')
 const adminController = require('../controllers/AdminController')
+const checkLogin = require('../auth/checkLogin')
 
 /* GET home page. */
-router.get('/', adminController.index);
+router.get('/', checkLogin, adminController.index);
 
 //[GET] list user
 router.get('/list/user_wait', adminController.list_wait);
