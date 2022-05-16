@@ -1,5 +1,19 @@
-<ul class="list-nav">
-    <li class="link-nav"><a href="#">Home</a></li>
-    <li class="link-nav"><a href="#">User</a></li>
-    <li class="link-nav"><a href="#">Withdraw money</a></li>
-</ul>
+<div class="row nav-border-admin">
+    <div class="col-lg-8 col-sm-12">
+        <ul class="list-nav">
+            <li class="link-nav"><a href="/admin">Home</a></li>
+            <li class="link-nav"><a href="/admin/manage-user">User</a></li>
+            <li class="link-nav"><a href="/admin/approve_withdraw_money">Withdraw money</a></li>
+        </ul>
+    </div>
+    <div class="col-lg-4 col-sm-12" style="padding: 10px 20px;">
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{name}}
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>

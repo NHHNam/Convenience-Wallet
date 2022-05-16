@@ -1,0 +1,58 @@
+{{!-- nav  --}}
+{{>navAdmin}}
+{{!-- end nav --}}
+
+{{!-- body --}}
+<div class="container">
+    <div class="row m-5">
+        <div class="col-lg-6 col-sm-12">
+            <a href="/admin/list/user_wait">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="/images/wait_list.jpeg" alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">List user waited for actived</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-lg-6 col-sm-12" style="padding: 10px;">
+            <a href="/admin/list/user_actived">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="/images/active_list.png" alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">List user actived</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-lg-6 col-sm-12">
+            <a href="/admin/list/user_block">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="/images/list_block.webp" alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">List user for block because not actived</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-lg-6 col-sm-12" style="padding: 10px;">
+            <a href="/admin/list/user_block_infinity">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="/images/lock_forever.jpeg" alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">List user lock becuase enter pass wrong 3 times</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+{{!-- end body --}}
+
+{{!-- footer --}}
+{{> footer}}
+{{!-- end footer --}}

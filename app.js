@@ -13,7 +13,7 @@ const walletRouter = require('./routes/wallet')
 
 const app = express();
 var sess = {
-  secret: 'secret key'
+  secret: 'secret key',
 }
 
 
@@ -21,6 +21,9 @@ var sess = {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 hbs.registerPartials(__dirname + '/views/partials');
+hbs.registerHelper("inc", function(value, options){
+  return parseInt(value) + 1;
+});
 
 app.use(session(sess))
 app.use(logger('dev'));

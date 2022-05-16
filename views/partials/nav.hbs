@@ -1,5 +1,15 @@
-<ul class="list-nav">
-    <li class="link-nav"><a href="#">Home</a></li>
-    <li class="link-nav"><a href="#">Information</a></li>
-    <li class="link-nav"><a href="#">Service</a></li>
-</ul>
+<div class="row">
+    <div class="col-lg-8">
+        <ul class="list-nav">
+            <li class="link-nav"><a href="#">Home</a></li>
+            <li class="link-nav"><a href="#">Information</a></li>
+            <li class="link-nav"><a href="#">Service</a></li>
+        </ul>
+    </div>
+    <div class="col-lg-4">
+        {{#if name}}
+        <div class=""><a href="#">{{name}}</a></div>
+        {{/if}}
+        <div class=""><a href="/logout">Logout</a></div>
+    </div>
+</div>

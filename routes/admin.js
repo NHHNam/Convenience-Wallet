@@ -3,17 +3,20 @@ var router = express.Router();
 const db = require('../models/db')
 const adminController = require('../controllers/AdminController')
 const checkLogin = require('../auth/checkLogin')
+const checkAdmin = require('../auth/checkAdmin')
 
 /* GET home page. */
-router.get('/', checkLogin, adminController.index);
+router.get('/', checkLogin, checkAdmin, adminController.index);
+
+router.get('/manage-user', checkLogin, checkAdmin, adminController.manageUser)
 
 //[GET] list user
-router.get('/list/user_wait', adminController.list_wait);
-router.get('/list/user_actived', adminController.list_actived);
-router.get('/list/user_block', adminController.list_block);
-router.get('/list/user_block_infinity', adminController.list_block_infinity);
+router.get('/list/user_wait', checkLogin, checkAdmin, adminController.list_wait);
+router.get('/list/user_actived', checkLogin, checkAdmin, adminController.list_actived);
+router.get('/list/user_block', checkLogin, checkAdmin, adminController.list_block);
+router.get('/list/user_block_infinity', checkLogin, checkAdmin, adminController.list_block_infinity);
 
 // [GET] Approve or Refuse withdraw money
-router.get('/approve_withdraw_money', adminController.approve_withdraw_money);
+router.get('/approve_withdraw_money', checkLogin, checkAdmin, adminController.approve_withdraw_money);
 
 module.exports = router;

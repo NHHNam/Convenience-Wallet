@@ -4,8 +4,8 @@ const bcrypt = require('bcrypt');
 class UserController{
     // [GET] /users/
     index(req, res){
-        let username = req.session.username
-        return res.render('index', {username})
+        let name = req.session.name
+        return res.render('index', {name})
     }
     // [GET] /users/login
     login(req, res){
@@ -16,7 +16,6 @@ class UserController{
     enter(req, res){
         const {username, password} = req.body
 
-        console.log(username, password)
         let sql = "SELECT * FROM account WHERE username = ?"
         let param = [username]
         let message = ''
@@ -31,10 +30,13 @@ class UserController{
                 .then(match => {
                     if(match){
                         if(position){
+                            req.session.name = result['0'].name
                             req.session.username = username
-                            // req.session.
+                            req.session.position = 1
                             return res.redirect('/admin')
                         }else{
+                            req.session.position = 0
+                            req.session.name = result['0'].name
                             req.session.username = username
                             return res.redirect('/users')
                         }

@@ -1,0 +1,41 @@
+{{!-- nav  --}}
+{{>navAdmin}}
+{{!-- end nav --}}
+
+{{!-- body --}}
+
+<div class="container mt-5 mb-5">
+    <h2>Danh sách người dùng khoá do nhập sai mật khẩu quá 3 lần </h2>    
+    <small>
+        <a href="/admin/manage-user">Back</a>
+    </small>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Address</th>
+                <th>Activated</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each data}}
+                <tr>
+                    <td>{{inc @index}}</td>
+                    <td>{{name}}</td>
+                    <td>{{email}}</td>
+                    <td>{{address}}</td>
+                    <td>{{activated}}</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+
+{{!-- end body --}}
+
+{{!-- footer --}}
+{{> footer}}
+{{!-- end footer --}}
