@@ -4,9 +4,10 @@ const db = require('../models/db')
 const adminController = require('../controllers/AdminController')
 const checkLogin = require('../auth/checkLogin')
 const checkAdmin = require('../auth/checkAdmin')
+const checkVerified = require('../midllewares/checkVerified')
 
 /* GET home page. */
-router.get('/', checkLogin, checkAdmin, adminController.index);
+router.get('/', checkLogin, checkVerified, checkAdmin, adminController.index);
 
 router.get('/manage-user', checkLogin, checkAdmin, adminController.manageUser)
 

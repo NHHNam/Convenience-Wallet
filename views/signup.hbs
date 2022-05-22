@@ -1,0 +1,51 @@
+<div id="border_login_page">
+    <form class="login-form" novalidate method="post" action="/users/signup">
+        <div class="header_login_form">Đăng ký</div>
+        <div class="field">
+            <label for="phoneNumber">Số điện thoại</label>
+            {{#if phoneNumber}}
+            <input type="number" class="field-input" id="phoneNumber" value="{{phoneNumber}}" name="phoneNumber" aria-describedby="emailHelp" placeholder="Enter your phoneNumber">
+            {{else}}
+            <input type="number" class="field-input" id="phoneNumber" name="phoneNumber" aria-describedby="emailHelp" placeholder="Enter your phone number">
+            {{/if}}
+        </div>
+        <div class="field">
+            <label for="email">Email</label>
+            {{#if email}}
+            <input type="email" class="field-input" id="email" value="{{email}}" name="email" placeholder="Enter your email">
+            {{else}}
+            <input type="email" class="field-input" id="email" name="email" placeholder="Enter your email">
+            {{/if}}
+        </div>
+        <div class="field">
+            <label for="name">Họ và tên</label>
+            {{#if name}}
+            <input type="text" class="field-input" id="name" value="{{name}}" name="name" placeholder="Enter your name">
+            {{else}}
+            <input type="text" class="field-input" id="name" name="name" placeholder="Enter your name">
+            {{/if}}
+        </div>
+        <div class="field">
+            <label for="birthday">Ngày sinh</label>
+            {{#if birthday}}
+            <input type="date" class="field-input" id="birthday" value="{{birthday}}" name="birthday" placeholder="Enter your birthday">
+            {{else}}
+            <input type="date" class="field-input" id="birthday" name="birthday" placeholder="Enter your birthday">
+            {{/if}}
+        </div>
+        <div class="field">
+            <label for="address">Địa chỉ</label>
+            {{#if address}}
+            <input type="text" class="field-input" id="address" value="{{address}}" name="address" placeholder="Enter your address">
+            {{else}}
+            <input type="text" class="field-input" id="address" name="address" placeholder="Enter your address">
+            {{/if}}
+        </div>
+        <div class="field">
+            {{#if message}}
+            <p class="error_login">{{message}}</p>
+            {{/if}}
+        </div>
+        <button type="submit" class="btn_login">Submit</button>
+    </form>
+</div>

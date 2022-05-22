@@ -24,4 +24,38 @@
         </div>
         <button type="submit" class="btn_login">Submit</button>
     </form>
+
+    <div id="account-dialog" class="modal fade">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <div>
+                <h3 class="modal-title text-success">Đăng ký tài khoản thành công</h3> <br>
+                <h5>Thông tin đăng nhập</h5>
+            </div>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+          Username: {{username}} <br>
+          Password: {{password}}
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" data-dismiss="modal">Đóng</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
 </div>
+
+<script>
+    {{#if signupSuccessful}}
+        $('#account-dialog').modal('show')
+    {{/if}}
+</script>
