@@ -82,7 +82,7 @@ class UserController{
     // [POST] /users/signup
     Register(req, res, next){
         const {sdt, email, name, ngaysinh, diachi} = req.body
-        let pathUploads = path.join(__dirname, '../public/uploads');
+        let pathUploads = path.join(__dirname, '../public/images');
         let file1 = req.files['attachment1'][0]
         let file2 = req.files['attachment2'][0]
         
@@ -93,8 +93,8 @@ class UserController{
         fs.renameSync(file1.path, newPath1)
         fs.renameSync(file2.path, newPath2)
 
-        let cccdFont = path.join('uploads', name1)
-        let cccdBéide = path.join('uploads', name2)
+        let cccdFont = path.join('images', name1)
+        let cccdBeside = path.join('images', name2)
         let username = otpGenerator.generate(10, { digits: true, lowerCaseAlphabets: false, specialChars: false, upperCaseAlphabets:false })
         let password = otpGenerator.generate(6)
         bcrypt.hash(password, saltRounds)
@@ -102,7 +102,7 @@ class UserController{
             let sql = `insert into account(sdt, email, name, ngaysinh, diachi, image_cccd_truoc,
                  image_cccd_sau, username, password, status, password_first, position, activated) 
                  values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-            let param = [sdt, email, name, ngaysinh, diachi, cccdFont, cccdBéide, username, hash, "chờ xác minh", 0, 0, 0]
+            let param = [sdt, email, name, ngaysinh, diachi, cccdFont, cccdBeside, username, hash, "chờ xác minh", 0, 0, 0]
             db.query(sql, param, (e, results, fields) => {
                 if(e){
                     message = e.message

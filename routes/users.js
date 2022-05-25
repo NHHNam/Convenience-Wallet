@@ -5,10 +5,13 @@ const userController = require('../controllers/UserController')
 const checkLogin = require('../auth/checkLogin')
 const multer  = require('multer')
 const checkChangePasswordFirst = require('../auth/checkChangePasswordFirst')
+const Path = require('path')
+const pathSave = Path.join(__dirname,'../uploads')
+// console.log(pathSave)
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, '../uploads/')
+        cb(null, pathSave)
     },
     filename: function (req, file, cb) {
         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
