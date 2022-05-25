@@ -19,4 +19,14 @@ router.get('/list/user_block_infinity', checkLogin, checkAdmin, adminController.
 // [GET] Approve or Refuse withdraw money
 router.get('/approve_withdraw_money', checkLogin, checkAdmin, adminController.approve_withdraw_money);
 
+
+// [GET] detail user
+router.get('/detailUser/:email', checkLogin, checkAdmin, adminController.detailUser);
+
+// [POST] activated user
+router.post('/detailUser/', checkLogin, checkAdmin, adminController.approve_activated_account);
+
+// [POST] /cancelActivated/
+router.post('/cancelActivated', checkLogin, checkAdmin, adminController.cancel_activated_account)
+
 module.exports = router;

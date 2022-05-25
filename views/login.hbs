@@ -1,5 +1,5 @@
 <div id="border_login_page">
-    <form class="login-form" novalidate method="post" action="/users/login">
+    <form class="login-form" novalidate method="post" >
         <div class="header_login_form">Đăng nhập</div>
         <div class="field">
             <label for="username">Username</label>
@@ -22,6 +22,9 @@
             <p class="error_login">{{message}}</p>
             {{/if}}
         </div>
+        <div class="mb-3">
+            if you don not have a account ? <a href="/users/signup">Sign up</a>
+        </div> 
         <button type="submit" class="btn_login">Submit</button>
     </form>
 </div>

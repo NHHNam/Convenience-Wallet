@@ -1,0 +1,100 @@
+<div class="container shadow-sm p-3 mb-5 bg-white rounded mt-5">
+    <small>
+        <a href="/users/login">Back</a>
+    </small>
+    <div style="text-align: center;font-size: 30px;font-weight: 500;">Đăng ký</div>
+    <div class="form-group">
+        <label for="">Số điện thoại</label>
+        <input type="number" class="form-control" id="sdt">
+    </div>
+        <div class="form-group">
+        <label for="">Email</label>
+        <input type="email" class="form-control" id="email">
+    </div>
+        <div class="form-group">
+        <label for="">Họ và tên</label>
+        <input type="text" class="form-control" id="name">
+    </div>
+        <div class="form-group">
+        <label for="">Ngày tháng năm sinh</label>
+        <input type="date" min="1970-01-01" max="2007-12-31" class="form-control" id="ngaysinh">
+    </div>
+        <div class="form-group">
+        <label for="">Địa chỉ</label>
+        <input type="text" class="form-control" id="diachi">
+    </div>
+    <div class="form-group">
+        <label for="">Uplaod CMND Trước</label>
+        <input type="file" accept="image/*" class="form-control" id="attachment1">
+    </div>
+    <div class="form-group">
+        <label for="">Uplaod CMND Sau</label>
+        <input type="file" accept="image/*" class="form-control" id="attachment2">
+    </div>
+    <div class="form-group">
+        {{#if message}}
+        <p class="error_login">{{message}}</p>
+        {{/if}}
+    </div>
+    <button class="btn_login" id="btnRegister">Submit</button>
+    <div id="message"></div>
+</div>
+
+<script>
+    $(document).ready(() => {
+
+        $('#btnRegister').click(() => {
+
+            let uploadFile1 = document.getElementById('attachment1')
+            let uploadFile2 = document.getElementById('attachment2')
+            console.log(uploadFile1.files)
+            console.log(uploadFile2.files)
+            if(uploadFile1.files.length == 0 || uploadFile2.files.length == 0){
+                return alert('Vui lòng chọn tập tin ')
+            }
+
+            let sdt = $('#sdt').val()
+            let email = $('#email').val()
+            let name = $('#name').val()
+            let ngaysinh = $('#ngaysinh').val()
+            let diachi = $('#diachi').val()
+            
+            let file1 = uploadFile1.files[0]
+            let file2 = uploadFile2.files[0]
+
+            let form = new FormData()
+            form.set('sdt', sdt)
+            form.set('email', email)
+            form.set('name', name)
+            form.set('ngaysinh', ngaysinh)
+            form.set('diachi', diachi)
+            form.set('attachment1', file1)
+            form.set('attachment2', file2)
+            
+            let xhr = new XMLHttpRequest()
+            xhr.open('POST', 'http://localhost:5000/users/signup', true)
+            xhr.addEventListener('load', e => {
+                if(xhr.readyState === 4 && xhr.status === 200){
+                    $('#message').css('color', 'green')
+                    $('#message').css('font-size', "20px")
+                    $('#message').css('font-weight', '500')
+                    $('#message').html(xhr.responseText)
+                    setInterval(() => {
+                        location.href = '/users/login'
+                    }, 3000)
+                }
+            })
+
+            let spinner = `
+                <div class="spinner-border text-light" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            `
+            $('#btnRegister').html(spinner)
+
+            xhr.send(form) // bắt đầu upload
+            
+        })
+
+    })
+</script>
