@@ -158,6 +158,38 @@ class UserController{
             }
         })
     }
+    get_forget(req, res) {
+        res.render('forget')
+    }
+
+    // [POST] /users/forget
+    post_forget(req, res) {
+        const { email } = req.body
+        db.query("SELECT * FROM account WHERE email = ?", [email], (e, result, fields) => {
+            if (e) return res.render('error', { message: e.message })
+            if (!result) return res.render('forget', { email, message: 'email is not true' })
+
+            db.query("UPDATE account SET password = ? WHERE email = ?", [hashed, email], (e, result, fields) => {
+                if (e) return res.render('error', { message: e.message })
+
+                var transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: { user: '', pass: '', }
+                });
+
+                transporter.sendMail({
+                    from: '',
+                    to: `${email}`,
+                    subject: '[TB] THÔNG TIN TÀI KHOẢN KHÁCH HÀNG',
+                    html: `<p>Cảm ơn bạn đã tin dùng ví điện tử của chúng tôi, vui lòng không chia sẻ thông tin này đến bất kỳ ai. 
+                    Đây là thông tin tài khoản của bạn:</p><b>Tên khách hàng: </b>${result[0].fullname} <br> 
+                    <b>Số tài khoản: </b>${result[0].username} <br><b>Mật khẩu: </b>${password}<p>Trân trọng ./.</p>`,
+                });
+
+                return res.render('forget', { message: 'Please check your email for information' });
+            })
+        })
+    }
 }
 
 module.exports = new UserController
