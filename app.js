@@ -15,6 +15,7 @@ const walletRouter = require('./routes/wallet')
 const app = express();
 var sess = {
   secret: 'secret key',
+  cookie: { maxAge: 60000 },
 }
 
 
@@ -24,6 +25,12 @@ app.set('view engine', 'hbs');
 hbs.registerPartials(__dirname + '/views/partials');
 hbs.registerHelper("inc", function(value, options){
   return parseInt(value) + 1;
+});
+
+hbs.registerHelper("vnd", function(value, options){
+  let money = parseInt(value)
+  money = money.toLocaleString('vi', {style : 'currency', currency : 'VND'})
+  return money;
 });
 
 app.use(session(sess))
@@ -41,6 +48,10 @@ app.use(function(req, res, next){
 app.use('/admin', adminRouter);
 app.use('/users', usersRouter);
 app.use('/walletRouter', walletRouter);
+
+app.get('/', (req, res) => {
+  res.redirect('/users/login')
+})
 
 app.get('/logout', (req, res) => {
   // req.session.username = null

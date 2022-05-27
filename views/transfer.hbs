@@ -1,0 +1,70 @@
+{{!-- nav --}}
+
+{{>nav}}
+{{!-- end nav --}}
+
+{{!-- body --}}
+
+<div class="container mb-5 mt-5">
+    <form method="post">
+        <div class="form-group">
+            <label for="">Số điện thoại người nhận</label>
+            <input type="text" class="form-control" name="sdt" onkeyup="search(this)">
+        </div>
+        <div class="form-group">
+            <label for="">Tên người nhận</label>
+            <input type="text" class="form-control" id="nameReceive">
+        </div>
+        <div class="form-group">
+            <label for="">Ghi chú</label>
+             <textarea name="note" class="form-control" cols="30" rows="10"></textarea>
+        </div>
+
+        <div class="form-control">
+            <label for="">Phí chuyển</label>
+            <select name="fee">
+                <option value="receive">Bên nhận</option>
+                <option value="send">Bên chuyển</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="">Số tiền chuyển</label>
+            <input type="number" class="form-control" id="transferMoney" name="transferMoney">
+        </div>
+        
+        <input type="submit" value="Chuyển tiền" id="chuyenBTN" class="bnt btn-success w-100" style="padding: 10px; outline: none; border: none; border-radius: 10px;">
+    </form>
+</div>
+
+{{!-- end body --}}
+
+
+{{!-- script --}}
+
+<script>
+    function search(word){
+        if(word.value.length === 10){
+            getNameRecevie(word.value)
+        }
+    }
+
+    function getNameRecevie(word){
+        var http = new XMLHttpRequest();
+        var url = `http://localhost:5000/users/getName/`;
+        var params = `sdt=${word}`;
+        http.open('POST', url, true);
+
+        //Send the proper header information along with the request
+        http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+        http.onreadystatechange = function() {//Call a function when the state changes.
+            if(http.readyState == 4 && http.status == 200) {
+                $('#nameReceive').val(http.responseText)
+            }
+        }
+        http.send(params);
+    }
+</script>
+
+{{!-- end script --}}

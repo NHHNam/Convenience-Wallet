@@ -5,7 +5,7 @@
 {{!-- body --}}
 
 <div class="container mt-5 mb-5">
-    <h2>Danh sách người dùng khoá do nhập sai mật khẩu quá 3 lần </h2>    
+    <h2>Danh sách người dùng khoá do nhập sai mật khẩu quá 3 lần hoặc đã bị vô hiệu hoá</h2>    
     <small>
         <a href="/admin/manage-user">Back</a>
     </small>
@@ -16,7 +16,7 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Address</th>
-                <th>Activated</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -25,8 +25,10 @@
                     <td>{{inc @index}}</td>
                     <td>{{name}}</td>
                     <td>{{email}}</td>
-                    <td>{{address}}</td>
-                    <td>{{activated}}</td>
+                    <td>{{diachi}}</td>
+                    <td>
+                        <a href="http://localhost:5000/admin/detailUser/{{email}}">View</a>
+                    </td>
                 </tr>
             {{/each}}
         </tbody>
@@ -35,7 +37,3 @@
 
 
 {{!-- end body --}}
-
-{{!-- footer --}}
-{{> footer}}
-{{!-- end footer --}}

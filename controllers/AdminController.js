@@ -86,6 +86,7 @@ class AdminController{
         let email = req.params.email
         let sql = "SELECT * FROM account WHERE email = ?"
         let param = [email]
+        let position = 1
         db.query(sql, param, (err, resulst, fields) => {
             if(err){
                 return res.render('error', {message: err.message})
@@ -93,8 +94,9 @@ class AdminController{
             let options = {
                 name: req.session.name,
                 data: resulst,
+                position: position
             }
-            return res.render('detail_user', options)
+            return res.render('detail_user_admin', options)
         })
         
     }

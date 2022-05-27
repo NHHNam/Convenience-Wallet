@@ -9,6 +9,11 @@ module.exports = (req, res, next) => {
             res.render('error', {message})
         }else{
             if(result[0].password_first === 0){
+                req.session.flash = {
+                    type: 'danger',
+                    intro: 'Lỗi',
+                    message: `Không được hỗ trợ các dịch vụ của hệ thống vì chưa đổi mật khẩu lần đầu`,
+                }
                 return res.redirect('/users/passwordFirst')
             }else{
                 next()

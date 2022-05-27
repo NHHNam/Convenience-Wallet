@@ -1,0 +1,48 @@
+{{!-- nav --}}
+
+{{>nav}}
+{{!-- end nav --}}
+
+{{!-- body --}}
+
+<div class="container mb-5 mt-5">
+    <form method="post">
+        <div class="form-group">
+            <label for="">Mã thẻ</label>
+            {{#if codeCard}}
+            <input type="text" class="form-control" name="codeCard" value="{{codeCard}}">
+            {{else}}
+            <input type="text" class="form-control" name="codeCard">
+            {{/if}}
+        </div>
+        <div class="form-group">
+            <label for="">Ngày hết hạn</label>
+            {{#if expiredCard}}
+            <input type="date" min="2022-05-26" class="form-control" value="{{expiredCard}}" name="expiredCard">
+            {{else}}
+            <input type="date" min="2022-05-26" class="form-control" name="expiredCard">
+            {{/if}}
+        </div>
+        <div class="form-group">
+            <label for="">Mã CVV</label>
+            {{#if codeCVV}}
+             <input type="text" class="form-control" name="codeCVV" value="{{codeCVV}}">
+            {{else}}
+             <input type="text" class="form-control" name="codeCVV">
+            {{/if}}
+        </div>
+        <div class="form-group">
+            <label for="">Số tiền nạp</label>
+            {{#if recharge}}
+            <input type="text" class="form-control" name="recharge" value="{{recharge}}">
+            {{else}}
+             <input type="text" class="form-control" name="recharge">
+            {{/if}}
+        </div>
+        <div style="color: red; font-weight:500; font-size: 30px;">{{messErr}}</div>
+        <div style="color: green; font-weight:500; font-size: 30px;">{{success}}</div>
+        <input type="submit" value="Nạp tiền" id="napBTN" class="bnt btn-success w-100" style="padding: 10px; outline: none; border: none; border-radius: 10px;">
+    </form>
+</div>
+
+{{!-- end body --}}

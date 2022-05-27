@@ -1,15 +1,31 @@
-<div class="row  nav-border-admin">
-    <div class="col-lg-8 col-sm-6">
-        <ul class="list-nav">
-            <li class="link-nav"><a href="#">Home</a></li>
-            <li class="link-nav"><a href="#">Information</a></li>
-            <li class="link-nav"><a href="#">Service</a></li>
-        </ul>
+<nav class="shadow-lg p-3 mb-5 bg-white rounded">
+    <div class="container ">
+        <div class="row d-flex justify-content-around">
+            <div class="col-lg-6">
+                <ul class="list-nav">
+                    <li class="link-nav"><a href="/users">Home</a></li>
+                    <li class="link-nav"><a href="/users/information">Information</a></li>
+                    <li class="link-nav"><a href="/users/services">Service</a></li>
+                </ul>
+
+            </div>
+            <div class="col-lg-3" style="text-align: center; line-height: 5">
+                <div>Số dư : {{vnd surplus}}</div>
+            </div>
+            <div class="col-lg-3" style="text-align: center; line-height: 5">
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{name}}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="/logout">Logout</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
     </div>
-    <div class="col-lg-4 col-sm-6">
-        {{#if name}}
-        <div class=""><a href="#">{{name}}</a></div>
-        {{/if}}
-        <div class=""><a href="/logout">Logout</a></div>
-    </div>
-</div>
+</nav>
+

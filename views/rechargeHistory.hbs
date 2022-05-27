@@ -1,0 +1,39 @@
+{{!-- nav --}}
+
+{{>nav}}
+{{!-- end nav --}}
+
+{{!-- body --}}
+
+
+<div class="container mt-5 mb-5">
+    <h2>Lịch sử giao dịch</h2>    
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Loại</th>
+                <th>Số tiền</th>
+                <th>Ngày</th>
+                <th>Thời gian</th>
+                <th>Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each data}}
+                <tr>
+                    <td>{{inc @index}}</td>
+                    <td>{{type}}</td>
+                    <td><a href="">{{vnd recharge}}</a></td>
+                    <td>{{dateRecharge}}</td>
+                    <td>{{timeRecharge}}</td>
+                    <td>{{status}}</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+
+
+{{!-- end body --}}

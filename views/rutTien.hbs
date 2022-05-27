@@ -1,0 +1,55 @@
+{{!-- nav --}}
+
+{{>nav}}
+{{!-- end nav --}}
+
+{{!-- body --}}
+
+<div class="container mb-5 mt-5">
+    <form method="post">
+        <div class="form-group">
+            <label for="">Mã thẻ</label>
+            {{#if codeCard}}
+            <input type="text" class="form-control" name="codeCard" value="{{codeCard}}">
+            {{else}}
+            <input type="text" class="form-control" name="codeCard">
+            {{/if}}
+        </div>
+        <div class="form-group">
+            <label for="">Ngày hết hạn</label>
+            {{#if expiredCard}}
+            <input type="date" min="2022-05-26" class="form-control" value="{{expiredCard}}" name="expiredCard">
+            {{else}}
+            <input type="date" min="2022-05-26" class="form-control" name="expiredCard">
+            {{/if}}
+        </div>
+        <div class="form-group">
+            <label for="">Mã CVV</label>
+            {{#if codeCVV}}
+             <input type="text" class="form-control" name="codeCVV" value="{{codeCVV}}">
+            {{else}}
+             <input type="text" class="form-control" name="codeCVV">
+            {{/if}}
+        </div>
+         <div class="form-group">
+            <label for="">Ghi chú</label>
+            {{#if note}}
+            <textarea name="note" class="form-control" cols="30" rows="10">{{note}}</textarea>
+            {{else}}
+             <textarea name="note" class="form-control" cols="30" rows="10"></textarea>
+            {{/if}}
+        </div>
+        <div class="form-group">
+            <label for="">Số tiền rút</label>
+            {{#if withdraw}}
+            <input type="text" class="form-control" name="withdraw" value="{{withdraw}}">
+            {{else}}
+             <input type="text" class="form-control" name="withdraw">
+            {{/if}}
+        </div>
+        
+        <input type="submit" value="Rút tiền" id="rutBTN" class="bnt btn-success w-100" style="padding: 10px; outline: none; border: none; border-radius: 10px;">
+    </form>
+</div>
+
+{{!-- end body --}}

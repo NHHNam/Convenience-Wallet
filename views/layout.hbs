@@ -12,6 +12,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   </head>
   <body>
+
+
     {{{body}}}
+
+    {{!-- flash card --}}
+    {{#if flash}}
+      <div class="alert alert-dismissible alert-{{flash.type}}">
+        <button aria-hidden="true" data-dismiss="alert" type="button" class="close">&times;</button>
+        <strong>{{flash.intro}}</strong> {{flash.message}}
+      </div>
+    {{/if}}
+    {{!-- end flash card --}}
+
+    {{!-- footer --}}
+    {{>footer}}
+
+    {{!-- end footer --}}
   </body>
 </html>

@@ -24,7 +24,7 @@ router.get('/approve_withdraw_money', checkLogin, checkAdmin, adminController.ap
 router.get('/detailUser/:email', checkLogin, checkAdmin, adminController.detailUser);
 
 // [POST] activated user
-router.post('/detailUser/', checkLogin, checkAdmin, adminController.approve_activated_account);
+router.post('/detailUser/', checkLogin, adminController.approve_activated_account);
 
 // [POST] /cancelActivated/
 router.post('/cancelActivated', checkLogin, checkAdmin, adminController.cancel_activated_account)
