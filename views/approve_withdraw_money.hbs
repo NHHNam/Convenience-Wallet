@@ -10,23 +10,54 @@
         <a href="/admin/">Back</a>
     </small>
     <table class="table table-bordered">
+        <h1>Yêu cầu nạp và rút tiền</h1>
         <thead>
             <tr>
                 <th>STT</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Address</th>
-                <th>Activated</th>
+                <th>Loại</th>
+                <th>Số tiền</th>
+                <th>Ngày</th>
+                <th>Thời gian</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            {{#each data}}
+            {{#each dataNopRut}}
                 <tr>
                     <td>{{inc @index}}</td>
-                    <td>{{name}}</td>
-                    <td>{{email}}</td>
-                    <td>{{address}}</td>
-                    <td>{{activated}}</td>
+                    <td>{{type}}</td>
+                    <td>{{vnd recharge}}</td>
+                    <td>{{dateRecharge}}</td>
+                    <td>{{timeRecharge}}</td>
+                    <td>
+                        <a href="/admin/detailNopRut/{{id}}" class="btn btn-primary">View</a>
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <br>
+    <table class="table table-bordered">
+        <h1>Yêu cầu Chuyển Tiền</h1>
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Số tiền</th>
+                <th>Ngày</th>
+                <th>Thời gian</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each dataTransfer}}
+                <tr>
+                    <td>{{inc @index}}</td>
+                    <td>{{vnd money}}</td>
+                    <td>{{date}}</td>
+                    <td>{{time}}</td>
+                    <td>
+                        <a href="/admin/detailTransfer/{{id}}" class="btn btn-primary">View</a>
+                    </td>
                 </tr>
             {{/each}}
         </tbody>

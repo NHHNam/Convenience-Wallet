@@ -5,7 +5,7 @@ const fs = require('fs')
 const otpGenerator = require('otp-generator')
 const saltRounds = 10
 const nodemailer = require('nodemailer')
-const { validationResult } = require('express-validator')
+const {validationResult} = require('express-validator')
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -13,12 +13,12 @@ const transporter = nodemailer.createTransport({
     secure: true,
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD
+      user: process.env.EMAIL,
+      pass: process.env.PASSWORD
     }
-})
-
-function sendUsPd(email, message) {
+  })
+  
+function sendUsPd(email, message){
     const mailOptions = {
         from: process.env.EMAIL,
         to: email,
@@ -27,15 +27,15 @@ function sendUsPd(email, message) {
     }
 
     transporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
-            console.log(err)
-        } else {
-            console.log('Email sent')
+        if(err){
+        console.log(err)
+        }else{
+        console.log('Email sent')
         }
     })
 }
 
-function sendOTP(email, message, req, res) {
+function sendOTP(email, message, req, res){
     const mailOptions = {
         from: process.env.EMAIL,
         to: email,
@@ -44,24 +44,24 @@ function sendOTP(email, message, req, res) {
     }
 
     transporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
+        if(err){
             req.session.flash = {
                 type: 'danger',
                 intro: 'Lỗi',
                 message: 'Thẻ không tồn tại',
             }
             return res.redirect('/users/services/transfer')
-        } else {
+        }else{
             console.log('Email sent')
             return res.redirect('/users/services/otpTransfer')
         }
     })
 }
 
-function napTien(email, recharge, numberCard, expirationDate, codeCVV, status, req, res) {
-    let currentdate = new Date();
+function napTien(email, recharge, numberCard, expirationDate, codeCVV, status, req, res){
+    let currentdate = new Date(); 
 
-    let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth() + 1) + '-' + currentdate.getDate()
+    let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth()+1) + '-' + currentdate.getDate()
     let time = "" + currentdate.getHours() + ':' + currentdate.getMinutes() + ':' + currentdate.getSeconds()
     let type = "Nạp tiền"
     let note = ""
@@ -71,12 +71,12 @@ function napTien(email, recharge, numberCard, expirationDate, codeCVV, status, r
     let param = [email, numberCard, expirationDate, codeCVV, recharge, date, time, type, note, status]
     let param1 = [recharge, email]
     let message = ''
-
-    if (status === "chờ duyệt") {
+    
+    if(status === "chờ duyệt"){
         db.query(sql, param, (e, results, fields) => {
-            if (e) {
+            if(e){
                 console.log(e.message)
-            } else {
+            }else{
                 req.session.flash = {
                     type: 'success',
                     intro: 'Thành công',
@@ -85,15 +85,15 @@ function napTien(email, recharge, numberCard, expirationDate, codeCVV, status, r
                 return res.redirect('/users/services/nopTien')
             }
         })
-    } else {
+    }else{
         db.query(sql, param, (e, results, fields) => {
-            if (e) {
+            if(e){
                 console.log(e.message)
-            } else {
+            }else{
                 db.query(sql1, param1, (err, ress, fss) => {
-                    if (err) {
+                    if(err){
                         console.log(err.message)
-                    } else {
+                    }else{
                         req.session.flash = {
                             type: 'success',
                             intro: 'Thành công',
@@ -110,26 +110,26 @@ function napTien(email, recharge, numberCard, expirationDate, codeCVV, status, r
 
 }
 
-function rutTien(email, withdraw, numberCard, expirationDate, codeCVV, note, status, req, res) {
-    let currentdate = new Date();
+function rutTien(email, withdraw, numberCard, expirationDate, codeCVV, note, status, req, res){
+    let currentdate = new Date(); 
 
-    let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth() + 1) + '-' + currentdate.getDate()
+    let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth()+1) + '-' + currentdate.getDate()
     let time = "" + currentdate.getHours() + ':' + currentdate.getMinutes() + ':' + currentdate.getSeconds()
     let type = "Rút tiền"
 
-    let withdraws = withdraw - withdraw * (5 / 100)
+    let withdraws = withdraw - withdraw*(5/100)
 
     let sql = "insert into historyServices(email, numberCard, expirationDate, codeCVV, recharge, dateRecharge, timeRecharge, type, note, status) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
     let sql1 = "update surplusAccount set surplus = surplus - ? where email = ?"
     let param = [email, numberCard, expirationDate, codeCVV, withdraws, date, time, type, note, status]
     let param1 = [withdraw, email]
     let message = ''
-
-    if (status === "chờ duyệt") {
+    
+    if(status === "chờ duyệt"){
         db.query(sql, param, (e, results, fields) => {
-            if (e) {
+            if(e){
                 console.log(e.message)
-            } else {
+            }else{
                 req.session.flash = {
                     type: 'success',
                     intro: 'Thành công',
@@ -139,15 +139,15 @@ function rutTien(email, withdraw, numberCard, expirationDate, codeCVV, note, sta
                 return res.redirect('/users/services/rutTien')
             }
         })
-    } else {
+    }else{
         db.query(sql, param, (e, results, fields) => {
-            if (e) {
+            if(e){
                 console.log(e.message)
-            } else {
+            }else{
                 db.query(sql1, param1, (err, ress, fss) => {
-                    if (err) {
+                    if(err){
                         console.log(err.message)
-                    } else {
+                    }else{
                         req.session.flash = {
                             type: 'success',
                             intro: 'Thành công',
@@ -162,19 +162,19 @@ function rutTien(email, withdraw, numberCard, expirationDate, codeCVV, note, sta
     }
 }
 
-function chuyenTien(emailSend, emailReceived, moneyTransfer, noteTransfer, fee, req, res) {
-    if (fee === "receive") {
-        if (parseInt(moneyTransfer) >= 5000000) {
+function chuyenTien(emailSend, emailReceived, moneyTransfer, noteTransfer, fee, req, res){
+    if(fee === "receive"){
+        if(parseInt(moneyTransfer) >= 5000000){
             let sql = "insert into historyTransfer(emailReceive, emailSend, note, money, typeFee, date, time, status) values(?, ?, ?, ?, ?, ?, ?, ?)"
-            let currentdate = new Date();
-
-            let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth() + 1) + '-' + currentdate.getDate()
+            let currentdate = new Date(); 
+    
+            let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth()+1) + '-' + currentdate.getDate()
             let time = "" + currentdate.getHours() + ':' + currentdate.getMinutes() + ':' + currentdate.getSeconds()
             let param = [emailReceived, emailSend, noteTransfer, moneyTransfer, fee, date, time, "chờ duyệt"]
             db.query(sql, param, (errr, ressss, fisss) => {
-                if (errr) {
+                if(errr){
                     console.log(errr)
-                } else {
+                }else{
                     req.session.flash = {
                         type: 'success',
                         intro: 'Thành công',
@@ -183,26 +183,26 @@ function chuyenTien(emailSend, emailReceived, moneyTransfer, noteTransfer, fee, 
                     return res.redirect('/users/services/transfer')
                 }
             })
-        } else {
+        }else{
             db.query("update surplusAccount set surplus = surplus - ? where email = ?", [moneyTransfer, emailSend], (e, results, fields) => {
-                if (e) {
+                if(e){
                     console.log(e)
-                } else {
-                    let feeTransfer = moneyTransfer * 5 / 100
+                }else{
+                    let feeTransfer = moneyTransfer*5/100
                     db.query("update surplusAccount set surplus = surplus + ? - ? where email = ?", [moneyTransfer, feeTransfer, emailReceived], (err, resss, fssss) => {
-                        if (err) {
+                        if(err){
                             console.log(err)
-                        } else {
+                        }else{
                             let sql = "insert into historyTransfer(emailReceive, emailSend, note, money, typeFee, date, time, status) values(?, ?, ?, ?, ?, ?, ?, ?)"
-                            let currentdate = new Date();
-
-                            let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth() + 1) + '-' + currentdate.getDate()
+                            let currentdate = new Date(); 
+        
+                            let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth()+1) + '-' + currentdate.getDate()
                             let time = "" + currentdate.getHours() + ':' + currentdate.getMinutes() + ':' + currentdate.getSeconds()
                             let param = [emailReceived, emailSend, noteTransfer, moneyTransfer, fee, date, time, "duyệt"]
                             db.query(sql, param, (errr, ressss, fisss) => {
-                                if (errr) {
+                                if(errr){
                                     console.log(errr)
-                                } else {
+                                }else{
                                     req.session.flash = {
                                         type: 'success',
                                         intro: 'Thành công',
@@ -216,18 +216,18 @@ function chuyenTien(emailSend, emailReceived, moneyTransfer, noteTransfer, fee, 
                 }
             })
         }
-    } else {
-        if (parseInt(moneyTransfer) >= 5000000) {
+    }else{
+        if(parseInt(moneyTransfer) >= 5000000){
             let sql = "insert into historyTransfer(emailReceive, emailSend, note, money, typeFee, date, time, status) values(?, ?, ?, ?, ?, ?, ?, ?)"
-            let currentdate = new Date();
-
-            let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth() + 1) + '-' + currentdate.getDate()
+            let currentdate = new Date(); 
+    
+            let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth()+1) + '-' + currentdate.getDate()
             let time = "" + currentdate.getHours() + ':' + currentdate.getMinutes() + ':' + currentdate.getSeconds()
             let param = [emailReceived, emailSend, noteTransfer, moneyTransfer, fee, date, time, "chờ duyệt"]
             db.query(sql, param, (errr, ressss, fisss) => {
-                if (errr) {
+                if(errr){
                     console.log(errr)
-                } else {
+                }else{
                     req.session.flash = {
                         type: 'success',
                         intro: 'Thành công',
@@ -236,26 +236,26 @@ function chuyenTien(emailSend, emailReceived, moneyTransfer, noteTransfer, fee, 
                     return res.redirect('/users/services/transfer')
                 }
             })
-        } else {
-            let feeTransfer = moneyTransfer * 5 / 100
+        }else{
+            let feeTransfer = moneyTransfer*5/100
             db.query("update surplusAccount set surplus = surplus - ? - ? where email = ?", [moneyTransfer, feeTransfer, emailSend], (e, results, fields) => {
-                if (e) {
+                if(e){
                     console.log(e)
-                } else {
+                }else{
                     db.query("update surplusAccount set surplus = surplus + ? where email = ?", [moneyTransfer, emailReceived], (err, resss, fssss) => {
-                        if (err) {
+                        if(err){
                             console.log(err)
-                        } else {
+                        }else{
                             let sql = "insert into historyTransfer(emailReceive, emailSend, note, money, typeFee, date, time, status) values(?, ?, ?, ?, ?, ?, ?, ?)"
-                            let currentdate = new Date();
-
-                            let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth() + 1) + '-' + currentdate.getDate()
+                            let currentdate = new Date(); 
+        
+                            let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth()+1) + '-' + currentdate.getDate()
                             let time = "" + currentdate.getHours() + ':' + currentdate.getMinutes() + ':' + currentdate.getSeconds()
                             let param = [emailReceived, emailSend, noteTransfer, moneyTransfer, fee, date, time, "duyệt"]
                             db.query(sql, param, (errr, ressss, fisss) => {
-                                if (errr) {
+                                if(errr){
                                     console.log(errr)
-                                } else {
+                                }else{
                                     req.session.flash = {
                                         type: 'success',
                                         intro: 'Thành công',
@@ -273,11 +273,11 @@ function chuyenTien(emailSend, emailReceived, moneyTransfer, noteTransfer, fee, 
 
 }
 
-class UserController {
+class UserController{
     // [GET] /users/
-    index(req, res) {
-
-        if (req.session.username) {
+    index(req, res){
+        
+        if(req.session.username){
             let name = req.session.name
             let username = req.session.username
             let email = req.session.email
@@ -285,32 +285,32 @@ class UserController {
             let param = [email]
 
             db.query(sql, param, (e, result, fields) => {
-                if (e) {
+                if(e){
                     message = e.message
-                    res.render('error', { message })
-                } else {
+                    res.render('error', {message})
+                }else{
                     let surplus = result[0].surplus
-                    return res.render('index', { name, username, surplus })
+                    return res.render('index', {name, username, surplus})
                 }
             })
-        } else {
+        }else{
             return res.redirect('/users/login')
         }
 
     }
 
     // [GET] /users/passwordFirst
-    changeFirst(req, res) {
+    changeFirst(req, res){
         let name = req.session.name
         let username = req.session.username
-        return res.render('changePasswordFirst', { name, username })
+        return res.render('changePasswordFirst', {name, username})
     }
 
     //services
 
 
     // [GET] /users/services
-    service(req, res) {
+    service(req, res){
         let name = req.session.name
         let username = req.session.username
         let email = req.session.email
@@ -318,18 +318,18 @@ class UserController {
         let param = [email]
         let message = ''
         db.query(sql, param, (e, result, fields) => {
-            if (e) {
+            if(e){
                 message = e.message
-                res.render('error', { message })
-            } else {
+                res.render('error', {message})
+            }else{
                 let surplus = result[0].surplus
-                return res.render('services', { name, username, surplus })
+                return res.render('services', {name, username, surplus})
             }
         })
     }
 
     // [GET] /users/services/nopTien
-    preNapTien(req, res) {
+    preNapTien(req, res){
         let name = req.session.name
         let username = req.session.username
         let email = req.session.email
@@ -337,10 +337,10 @@ class UserController {
         let sql = "select * from surplusAccount where email = ?"
         let param = [email]
         db.query(sql, param, (e, result, fields) => {
-            if (e) {
+            if(e){
                 message = e.message
-                res.render('error', { message })
-            } else {
+                res.render('error', {message})
+            }else{
                 let surplus = result[0].surplus
 
                 // thong tin the
@@ -349,16 +349,16 @@ class UserController {
                 let codeCVV = req.session.codeCVV || ""
                 let recharge = req.session.recharge || ""
 
-                return res.render('nopTien', { name, username, surplus, codeCard, expiredCard, codeCVV, recharge })
+                return res.render('nopTien', {name, username, surplus, codeCard, expiredCard, codeCVV, recharge})
             }
         })
     }
 
     // [POST] /users/services/nopTien
-    napTien(req, res) {
-        const { codeCard, expiredCard, codeCVV, recharge } = req.body
+    napTien(req, res){
+        const {codeCard, expiredCard, codeCVV, recharge} = req.body
         let result = validationResult(req)
-        if (result.errors.length === 0) {
+        if(result.errors.length === 0){
             let sql = "select * from creditCard where numberCard = ?"
             let param = [codeCard]
             let message = ''
@@ -367,11 +367,11 @@ class UserController {
             delete req.session.codeCVV
             delete req.session.recharge
             db.query(sql, param, (e, results, fields) => {
-                if (e) {
+                if(e){
                     message = e.message
-                    res.render('error', { message })
-                } else {
-                    if (results.length == 0) {
+                    res.render('error', {message})
+                }else{
+                    if(results.length == 0){
                         req.session.flash = {
                             type: 'danger',
                             intro: 'Lỗi',
@@ -382,9 +382,9 @@ class UserController {
                         req.session.codeCVV = codeCVV
                         req.session.recharge = recharge
                         return res.redirect('/users/services/nopTien')
-                    } else {
+                    }else{
                         // console.log(results)
-                        if (expiredCard != results[0].expirationDate) {
+                        if(expiredCard != results[0].expirationDate){
                             req.session.flash = {
                                 type: 'danger',
                                 intro: 'Lỗi',
@@ -395,7 +395,7 @@ class UserController {
                             req.session.codeCVV = codeCVV
                             req.session.recharge = recharge
                             return res.redirect('/users/services/nopTien')
-                        } else if (codeCVV != results[0].codeCVV) {
+                        }else if(codeCVV != results[0].codeCVV){
                             req.session.flash = {
                                 type: 'danger',
                                 intro: 'Lỗi',
@@ -406,22 +406,23 @@ class UserController {
                             req.session.codeCVV = codeCVV
                             req.session.recharge = recharge
                             return res.redirect('/users/services/nopTien')
-                        } else {
-                            req.session.success = "Nộp tiền thành công"
-                            let email = req.session.email
+                        }else{                        
+                            let email = ""
                             let status = ""
-                            if (codeCard === '111111') {
-                                if (parseInt(recharge) >= 5000000) {
+                            if(codeCard === '111111'){
+                                if(parseInt(recharge) >= 5000000){
                                     status = "chờ duyệt"
+                                    email = req.session.email
                                     napTien(email, recharge, codeCard, expiredCard, codeCVV, status, req, res)
-
-                                } else {
+        
+                                }else{
+                                    email = req.session.email
                                     status = "duyệt"
                                     napTien(email, recharge, codeCard, expiredCard, codeCVV, status, req, res)
-
+                                    
                                 }
-                            } else if (codeCard === '222222') {
-                                if (parseInt(recharge) > 1000000) {
+                            }else if(codeCard === '222222'){
+                                if(parseInt(recharge) > 1000000){
                                     req.session.flash = {
                                         type: 'danger',
                                         intro: 'Lỗi',
@@ -432,13 +433,12 @@ class UserController {
                                     req.session.codeCVV = codeCVV
                                     req.session.recharge = recharge
                                     return res.redirect('/users/services/nopTien')
-                                } else {
+                                }else{
                                     status = "duyệt"
-                                    napTien(email, recharge, codeCard, expiredCard, codeCVV, status)
-
-                                    return res.redirect('/users/services/nopTien')
+                                    email = req.session.email
+                                    napTien(email, recharge, codeCard, expiredCard, codeCVV, status, req, res)
                                 }
-                            } else {
+                            }else{
                                 req.session.flash = {
                                     type: 'danger',
                                     intro: 'Lỗi',
@@ -451,18 +451,18 @@ class UserController {
                                 return res.redirect('/users/services/nopTien')
                             }
                         }
-
+    
                     }
                 }
             })
-        } else {
+        }else{
             let messages = result.mapped()
             let message = ''
             req.session.codeCard = codeCard
             req.session.expiredCard = expiredCard
             req.session.codeCVV = codeCVV
             req.session.recharge = recharge
-            for (let m in messages) {
+            for(let m in messages){
                 message = messages[m]
                 break
             }
@@ -477,17 +477,17 @@ class UserController {
     }
 
     // [GET] /users/services/rutTien
-    preRutTien(req, res) {
+    preRutTien(req, res){
         let name = req.session.name
         let username = req.session.username
         let email = req.session.email
         let sql = "select * from surplusAccount where email = ?"
         let param = [email]
         db.query(sql, param, (e, result, fields) => {
-            if (e) {
+            if(e){
                 message = e.message
-                res.render('error', { message })
-            } else {
+                res.render('error', {message})
+            }else{
                 let surplus = result[0].surplus
 
                 // thong tin the
@@ -496,16 +496,16 @@ class UserController {
                 let codeCVV = req.session.codeCVV
                 let withdraw = req.session.withdraw
                 let note = req.session.note
-                return res.render('rutTien', { name, username, surplus, codeCVV, codeCard, expiredCard, withdraw, note })
+                return res.render('rutTien', {name, username, surplus, codeCVV, codeCard, expiredCard, withdraw, note})
             }
         })
     }
 
     // [POST] /users/services/rutTien
-    rutTien(req, res) {
-        const { codeCard, expiredCard, codeCVV, note, withdraw } = req.body
+    rutTien(req, res){
+        const {codeCard, expiredCard, codeCVV, note, withdraw} = req.body
         let result = validationResult(req)
-        if (result.errors.length === 0) {
+        if(result.errors.length === 0){
             let sql = "select * from creditCard where numberCard = ?"
             let param = [codeCard]
             let message = ''
@@ -516,11 +516,11 @@ class UserController {
             delete req.session.note
             let status = ""
             db.query(sql, param, (e, results, fields) => {
-                if (e) {
+                if(e){
                     message = e.message
-                    res.render('error', { message })
-                } else {
-                    if (results.length == 0) {
+                    res.render('error', {message})
+                }else{
+                    if(results.length == 0){
                         req.session.flash = {
                             type: 'danger',
                             intro: 'Lỗi',
@@ -532,8 +532,8 @@ class UserController {
                         req.session.withdraw = withdraw
                         req.session.note = note
                         return res.redirect('/users/services/rutTien')
-                    } else {
-                        if (expiredCard != results[0].expirationDate) {
+                    }else{
+                        if(expiredCard != results[0].expirationDate){
                             req.session.flash = {
                                 type: 'danger',
                                 intro: 'Lỗi',
@@ -545,7 +545,7 @@ class UserController {
                             req.session.withdraw = withdraw
                             req.session.note = note
                             return res.redirect('/users/services/rutTien')
-                        } else if (codeCVV != results[0].codeCVV) {
+                        }else if(codeCVV != results[0].codeCVV){
                             req.session.flash = {
                                 type: 'danger',
                                 intro: 'Lỗi',
@@ -557,28 +557,28 @@ class UserController {
                             req.session.withdraw = withdraw
                             req.session.note = note
                             return res.redirect('/users/services/rutTien')
-                        } else {
-                            if (withdraw < 50000) {
+                        }else{ 
+                            if(withdraw < 50000){
                                 req.session.flash = {
-                                        type: 'danger',
-                                        intro: 'Lỗi',
-                                        message: 'Mệnh giá rút phải từ 50.000 VND trở lên',
-                                    }
-                                    // req.session.message = "Mệnh giá rút phải từ 50.000 VND trở lên"
+                                    type: 'danger',
+                                    intro: 'Lỗi',
+                                    message: 'Mệnh giá rút phải từ 50.000 VND trở lên',
+                                }
+                                // req.session.message = "Mệnh giá rút phải từ 50.000 VND trở lên"
                                 req.session.codeCard = codeCard
                                 req.session.expiredCard = expiredCard
                                 req.session.codeCVV = codeCVV
                                 req.session.withdraw = withdraw
                                 req.session.note = note
                                 return res.redirect('/users/services/rutTien')
-                            } else {
+                            }else{
                                 let email = req.session.email
                                 db.query("select * from surplusAccount where email = ?", [email], (err, ress, fss) => {
-                                    if (err) {
+                                    if(err){
                                         message = err.message
-                                        res.render('error', { message })
-                                    } else {
-                                        if (parseInt(withdraw) > parseInt(ress[0].surplus)) {
+                                        res.render('error', {message})
+                                    }else{
+                                        if(parseInt(withdraw) > parseInt(ress[0].surplus)){
                                             req.session.flash = {
                                                 type: 'danger',
                                                 intro: 'Lỗi',
@@ -590,11 +590,11 @@ class UserController {
                                             req.session.withdraw = withdraw
                                             req.session.note = note
                                             return res.redirect('/users/services/rutTien')
-                                        } else {
-                                            if (parseInt(withdraw) >= 5000000) {
+                                        }else{
+                                            if(parseInt(withdraw) >= 5000000){
                                                 status = "chờ duyệt"
                                                 rutTien(email, withdraw, codeCard, expiredCard, codeCVV, note, status, req, res)
-                                            } else {
+                                            }else{
                                                 status = "duyệt"
                                                 rutTien(email, withdraw, codeCard, expiredCard, codeCVV, note, status, req, res)
                                             }
@@ -606,7 +606,7 @@ class UserController {
                     }
                 }
             })
-        } else {
+        }else{
             let messages = result.mapped()
             let message = ''
             req.session.codeCard = codeCard
@@ -614,7 +614,7 @@ class UserController {
             req.session.codeCVV = codeCVV
             req.session.withdraw = withdraw
             req.session.note = note
-            for (let m in messages) {
+            for(let m in messages){
                 message = messages[m]
                 break
             }
@@ -628,7 +628,7 @@ class UserController {
     }
 
     // [GET] /users/services/history
-    historyService(req, res) {
+    historyService(req, res){
         let name = req.session.name
         let username = req.session.username
         let email = req.session.email
@@ -636,23 +636,39 @@ class UserController {
         let param = [email]
         let message = ''
         db.query(sql, param, (e, result, fields) => {
-            if (e) {
+            if(e){
                 message = e.message
-                res.render('error', { message })
-            } else {
+                return res.render('error', {message})
+            }else{
                 let surplus = result[0].surplus
                 db.query("select * from historyServices where email = ?", [email], (err, ress, fss) => {
-                    if (err) {
+                    if(err){
                         message = err.message
-                        res.render('error', { message })
-                    } else {
-                        let options = {
-                            name,
-                            username,
-                            surplus,
-                            data: ress.reverse()
-                        }
-                        return res.render('rechargeHistory', options)
+                        return res.render('error', {message})
+                    }else{
+                        db.query("select * from historyTransfer where emailSend = ?", [email], (errs, resss, fsss) => {
+                            if(errs){
+                                message = errs.message
+                                res.render('error', {message})
+                            }else{
+                                db.query("select * from historyCodeCard where email = ?", [email], (errrs, ressss, fssss) => {
+                                    if(errrs){
+                                        message = errs.message
+                                        return res.render('error', {message})
+                                    }else{
+                                        let options = {
+                                            name,
+                                            username, 
+                                            surplus,
+                                            data: ress.reverse(),
+                                            dataTransfer: resss.reverse(),
+                                            dataCodeCard: ressss.reverse(),
+                                        }        
+                                        return res.render('rechargeHistory', options)
+                                    }
+                                })
+                            }
+                        })
                     }
                 })
             }
@@ -661,64 +677,80 @@ class UserController {
 
     // [GET] /users/services/transfer
 
-    preTransfer(req, res) {
+    preTransfer(req, res){
         let name = req.session.name
         let username = req.session.username
         let email = req.session.email
         let sql = "select * from surplusAccount where email = ?"
         let param = [email]
         db.query(sql, param, (e, result, fields) => {
-            if (e) {
+            if(e){
                 message = e.message
-                res.render('error', { message })
-            } else {
+                res.render('error', {message})
+            }else{
                 let surplus = result[0].surplus
 
-                return res.render('transfer', { name, username, surplus })
+                return res.render('transfer', {name, username, surplus})
             }
         })
     }
 
     // [POST] /users/services/transfer
 
-    Transfer(req, res) {
-        const { sdt, note, fee, transferMoney } = req.body
+    Transfer(req, res){
+        const {sdt, note, fee, transferMoney} = req.body
 
         let message = ''
         let emailSend = req.session.email
         let sql = "select * from account where sdt = ?"
         let param = [sdt]
         db.query(sql, param, (e, result, fields) => {
-            if (e) {
+            if(e){
                 message = e.message
-                res.render('error', { message })
-            } else {
-                if (result.length == 0) {
+                return res.render('error', {message})
+            }else{
+                if(result.length == 0){
                     req.session.flash = {
                         type: 'danger',
                         intro: 'Lỗi',
-                        message: 'Thẻ không tồn tại',
+                        message: 'Người dùng không tồn tại',
                     }
                     return res.redirect('/users/services/transfer')
-                } else {
-                    let otp = otpGenerator.generate(4, { digits: true, lowerCaseAlphabets: false, specialChars: false, upperCaseAlphabets: false })
-                    let mess = `Your otp for transfer money is ${otp}`
-                    let currentdate = new Date();
-                    let emailReceive = result[0].email
-                    let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth() + 1) + '-' + currentdate.getDate()
-                    let time = "" + currentdate.getHours() + ':' + currentdate.getMinutes() + ':' + currentdate.getSeconds()
-                    let sql1 = "insert into otpCode(email, otp, date, time, status) values(?, ?, ?, ?, ?)"
-                    let param1 = [emailSend, otp, date, time, "đang có"]
-                    db.query(sql1, param1, (err, ress, fsss) => {
-                        if (err) {
-                            message = err.message
-                            res.render('error', { message })
-                        } else {
-                            sendOTP(emailSend, mess, req, res)
-                            req.session.noteTransfer = note
-                            req.session.moneyTransfer = transferMoney
-                            req.session.fee = fee
-                            req.session.emailReceive = emailReceive
+                }else{
+                    db.query("select * from surplusAccount where email = ?", [emailSend], (loi, kq, a) => {
+                        if(loi){
+                            message = e.message
+                            return res.render('error', {message})
+                        }else{
+                            if(parseInt(kq[0].surplus) < parseInt(transferMoney)){
+                                req.session.flash = {
+                                    type: 'danger',
+                                    intro: 'Lỗi',
+                                    message: 'Số tiền hiện tại của bạn không đủ để thực hiện',
+                                }
+                                return res.redirect('/users/services/transfer')
+                            }else{
+                                let otp = otpGenerator.generate(4, { digits: true, lowerCaseAlphabets: false, specialChars: false, upperCaseAlphabets:false })
+                                let mess = `Your otp for transfer money is ${otp}`
+                                let currentdate = new Date(); 
+                                let emailReceive = result[0].email
+                                let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth()+1) + '-' + currentdate.getDate()
+                                let time = "" + currentdate.getHours() + ':' + currentdate.getMinutes() + ':' + currentdate.getSeconds()
+                                let sql1 = "insert into otpCode(email, otp, date, time, status) values(?, ?, ?, ?, ?)"
+                                let param1 = [emailSend, otp, date, time, "đang có"]
+                                db.query(sql1, param1, (err, ress, fsss) => {
+                                    if(err){
+                                        message = err.message
+                                        res.render('error', {message})
+                                    }else{
+                                        sendOTP(emailSend, mess, req, res)
+                                        req.session.noteTransfer = note
+                                        req.session.moneyTransfer = transferMoney
+                                        req.session.fee = fee
+                                        req.session.emailReceive = emailReceive
+                                    }
+                                })
+                            }
                         }
                     })
                 }
@@ -727,45 +759,43 @@ class UserController {
     }
 
     // [GET] /users/services/otpTransfer
-    enterOTP(req, res) {
+    enterOTP(req, res){
         let name = req.session.name
         let username = req.session.username
         let email = req.session.email
         let sql = "select * from surplusAccount where email = ?"
         let param = [email]
         db.query(sql, param, (e, result, fields) => {
-            if (e) {
+            if(e){
                 message = e.message
-                res.render('error', { message })
-            } else {
+                res.render('error', {message})
+            }else{
                 let surplus = result[0].surplus
 
-                return res.render('otpTransfer', { name, username, surplus })
+                return res.render('otpTransfer', {name, username, surplus})
             }
         })
     }
 
     // [POST] /users/services/otpTransfer
-    transferMoney(req, res) {
-        const { otp } = req.body
+    transferMoney(req, res){
+        const {otp} = req.body
         let email = req.session.email
         let sql = "select * from otpCode where email = ?"
         let param = [email]
         db.query(sql, param, (e, results, fields) => {
-            if (e) {
+            if(e){
                 message = e.message
-                res.render('error', { message })
-            } else {
+                res.render('error', {message})
+            }else{
                 let row = results.reverse()
-                console.log(row[0])
-                console.log(otp)
-                if (parseInt(otp) === parseInt(row[0].otp)) {
+                if(parseInt(otp) === parseInt(row[0].otp)){
                     let moneyTransfer = req.session.moneyTransfer
                     let noteTransfer = req.session.noteTransfer
                     let emailReceive = req.session.emailReceive
                     let fee = req.session.fee
                     chuyenTien(email, emailReceive, moneyTransfer, noteTransfer, fee, req, res)
-                } else {
+                }else{
                     req.session.flash = {
                         type: 'danger',
                         intro: 'Lỗi',
@@ -778,18 +808,18 @@ class UserController {
     }
 
     // [GET] /users/getName
-    getName(req, res) {
-        const { sdt } = req.body
+    getName(req, res){
+        const {sdt} = req.body
         let sql = "select * from account where sdt = ?"
         let param = [sdt]
         db.query(sql, param, (e, result, fields) => {
-            if (e) {
+            if(e){
                 message = e.message
-                res.render('error', { message })
-            } else {
-                if (result.length === 0) {
+                res.render('error', {message})
+            }else{
+                if(result.length === 0){
                     return res.send(`Không tồn tại người dung có số điện thoại: ${sdt}`)
-                } else {
+                }else{
                     let name = result[0].name
                     return res.send(name)
                 }
@@ -797,51 +827,151 @@ class UserController {
         })
     }
 
+    // [GET] /users/services/codePhone
+    preCodePhone(req, res){
+        let name = req.session.name
+        let username = req.session.username
+        let email = req.session.email
+        let sql = "select * from surplusAccount where email = ?"
+        let param = [email]
+        db.query(sql, param, (e, result, fields) => {
+            if(e){
+                message = e.message
+                return res.render('error', {message})
+            }else{
+                let surplus = result[0].surplus
+
+                db.query("select * from phoneNetwork", (err, ress, fss) => {
+                    if(err){
+                        message = err.message
+                        return res.render('error', {message})
+                    }else{
+                        let options = {
+                            name, 
+                            username, 
+                            surplus, 
+                            datNetwork: ress,
+                        }
+                        return res.render('codePhone', options)
+                    }
+                })
+
+            }
+        })
+    }
+
+    // [POST] /users/services/codePhone
+    codePhone(req, res){
+        let email = req.session.email
+        const {network, menhGia, SL} = req.body
+        req.session.listCard = null
+        db.query('select * from phoneNetwork where network = ?', [network], (err, results, fields) => {
+            if(err){
+                message = err.message
+                return res.render('error', {message})
+            }else{
+                let loop = parseInt(SL)
+                let listCard = []
+                for(let i = 0; i < loop; i++){
+                    let otp = otpGenerator.generate(5, { digits: true, lowerCaseAlphabets: false, specialChars: false, upperCaseAlphabets:false })
+                    let seriCard = results[0].code + "" + otp
+                    let currentdate = new Date(); 
+                    let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth()+1) + '-' + currentdate.getDate()
+                    let time = "" + currentdate.getHours() + ':' + currentdate.getMinutes() + ':' + currentdate.getSeconds()
+                    db.query("insert into historyCodeCard(email, network, codeCard, cost, date, time) values(?, ?, ?, ?, ?, ?)", [email, network, seriCard, menhGia, date, time], (e, ress, fss) => {
+                        if(e){
+                            message = err.message
+                            return res.render('error', {message})
+                        }else{
+                            let sql1 = "update surplusAccount set surplus = surplus - ? where email = ?"
+                            let param1 = [parseInt(menhGia), email]
+                            db.query(sql1, param1, (errors, resultss, fieldsss) => {
+                                if(errors){
+                                    message = errors.message
+                                    return res.render('error', {message})
+                                }
+                            })
+                        }
+                    })
+                    listCard.push({codeCard: seriCard, network: network, cost: menhGia, date: date, time: time})
+                }
+                req.session.listCard = listCard
+                res.redirect('/users/services/resBuyCard')
+            }
+        })
+
+    }
+
+    // [GET] /users/services/resBuyCard
+    resultBuyCard(req, res){
+        let listCard = req.session.listCard || ""
+        let name = req.session.name
+        let username = req.session.username
+        let email = req.session.email
+        let sql = "select * from surplusAccount where email = ?"
+        let param = [email]
+        db.query(sql, param, (e, result, fields) => {
+            if(e){
+                message = e.message
+                return res.render('error', {message})
+            }else{
+                let surplus = result[0].surplus
+                let options = {
+                    name, 
+                    username, 
+                    surplus,
+                    listCard: listCard,
+                }
+                return res.render('resCodePhone', options)
+            }
+        })
+    }
+
     // end services
 
 
-    changeFirstPassword(req, res) {
+    changeFirstPassword(req, res){
         let username = req.body.username
         let pwd = req.body.pwd
         bcrypt.hash(pwd, saltRounds)
-            .then(hash => {
-                let sql = "update account set password = ?, password_first = ? where username = ?"
-                let param = [hash, 1, username]
-                db.query(sql, param, (e, result, fields) => {
-                    if (e) {
-                        message = e.message
-                        res.render('error', { message })
-                    } else {
-                        return res.send("Change Password completely")
-                    }
-                })
+        .then(hash => {
+            let sql = "update account set password = ?, password_first = ? where username = ?"
+            let param = [hash, 1, username]
+            db.query(sql, param, (e, result, fields) => {
+                if(e){
+                    message = e.message
+                    res.render('error', {message})
+                }else{
+                    return res.send("Change Password completely")
+                }
             })
-            .catch(err => {
-                console.log(err)
-            })
+        })
+        .catch(err => {
+            console.log(err)
+        })
     }
 
     // [GET] /users/login
-    login(req, res) {
-        if (req.session.username) {
+    login(req, res){
+        if(req.session.username){
             return res.redirect('/users/')
-        } else {
+        }else{
             return res.render('login')
         }
     }
 
     // [GET] /users/signup
-    preRegister(req, res) {
-            res.render('signUp')
-        }
-        // [POST] /users/signup
-    Register(req, res, next) {
-        const { sdt, email, name, ngaysinh, diachi } = req.body
+    preRegister(req, res){
+        res.render('signUp')
+    }
+    // [POST] /users/signup
+    Register(req, res, next){
+        const {sdt, email, name, ngaysinh, diachi} = req.body
         let pathUploads = path.join(__dirname, '../public/images');
         let file1 = req.files['attachment1'][0]
         let file2 = req.files['attachment2'][0]
         let message = ''
-
+        
         let name1 = file1.originalname
         let newPath1 = path.join(pathUploads, name1)
         let name2 = file2.originalname
@@ -851,72 +981,157 @@ class UserController {
 
         let cccdFont = path.join('images', name1)
         let cccdBeside = path.join('images', name2)
-        let username = otpGenerator.generate(10, { digits: true, lowerCaseAlphabets: false, specialChars: false, upperCaseAlphabets: false })
+        let username = otpGenerator.generate(10, { digits: true, lowerCaseAlphabets: false, specialChars: false, upperCaseAlphabets:false })
         let password = otpGenerator.generate(6)
         bcrypt.hash(password, saltRounds)
-            .then(hash => {
-                let sql = `insert into account(sdt, email, name, ngaysinh, diachi, image_cccd_truoc,
+        .then(hash => {
+            let sql = `insert into account(sdt, email, name, ngaysinh, diachi, image_cccd_truoc,
                  image_cccd_sau, username, password, status, password_first, position, activated) 
                  values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-                let param = [sdt, email, name, ngaysinh, diachi, cccdFont, cccdBeside, username, hash, "chờ xác minh", 0, 0, 0]
-                db.query(sql, param, (e, results, fields) => {
-                    if (e) {
-                        message = e.message
-                        res.render('error', { message })
-                    } else {
-                        let sqls = "insert into surplusAccount(email, surplus) values(? ,?)"
-                        let param1 = [email, 0]
-                        db.query(sqls, param1, (errs, ress, fieldss) => {
-                            if (errs) {
-                                message = errs.message
-                                res.render('error', { message })
-                            }
-                            console.log(ress)
-                        })
-                        sendUsPd(email, `Username: ${username}, Password: ${password}`)
-                        return res.send('Register completely')
-                    }
-                })
+            let param = [sdt, email, name, ngaysinh, diachi, cccdFont, cccdBeside, username, hash, "chờ xác minh", 0, 0, 0]
+            db.query(sql, param, (e, results, fields) => {
+                if(e){
+                    message = e.message
+                    res.render('error', {message})
+                }else{
+                    let sqls = "insert into surplusAccount(email, surplus) values(? ,?)"
+                    let param1 = [email, 0]
+                    db.query(sqls, param1, (errs, ress, fieldss) => {
+                        if(errs){
+                            message = errs.message
+                            res.render('error', {message})
+                        }
+                        console.log(ress)
+                    })
+                    sendUsPd(email, `Username: ${username}, Password: ${password}`)
+                    return res.send('Register completely')
+                }
+            })
 
-            })
-            .catch(e => {
-                console.log(e.message)
-            })
+        })
+        .catch(e => {
+            console.log(e.message)
+        })
     }
 
     //[GET] /users/information
-    informaiton(req, res) {
+    informaiton(req, res){
         let username = req.session.username
         let sql = "SELECT * FROM account WHERE username = ?"
         let param = [username]
         let message = ''
         db.query(sql, param, (e, result, fields) => {
-            if (e) {
+            if(e){
                 message = e.message
-                res.render('error', { message })
-            } else {
+                res.render('error', {message})
+            }else{
                 let email = req.session.email
                 let sqlss = "select * from surplusAccount where email = ?"
                 let paramss = [email]
                 db.query(sqlss, paramss, (e, results, fieldss) => {
-                    if (e) {
+                    if(e){
                         message = e.message
-                        res.render('error', { message })
-                    } else {
-                        let surplus = results[0].surplus
-                        let options = {
-                            name: req.session.name,
-                            data: result,
-                            surplus: surplus
+                        res.render('error', {message})
+                    }else{
+                        if(result[0].status === "yêu cầu bổ sung"){
+                            let surplus = results[0].surplus
+                            let order = "bosung"
+                            let options = {
+                                name: req.session.name,
+                                data: result,
+                                surplus: surplus,
+                                order: order
+                            }
+                            return res.render('detail_user', options)
+                        }else{
+                            let surplus = results[0].surplus
+                            let options = {
+                                name: req.session.name,
+                                data: result,
+                                surplus: surplus
+                            }
+                            return res.render('detail_user', options)
                         }
-                        return res.render('detail_user', options)
                     }
                 })
             }
         })
     }
 
+    //[POST] /users/information
+    additionInformation(req, res){
+        const {email} = req.body
+        let pathUploads = path.join(__dirname, '../public/images');
+        let file1 = req.files['attachment1'][0]
+        let file2 = req.files['attachment2'][0]
+        let message = ''
+        
+        let name1 = file1.originalname
+        let newPath1 = path.join(pathUploads, name1)
+        let name2 = file2.originalname
+        let newPath2 = path.join(pathUploads, name2)
+        fs.renameSync(file1.path, newPath1)
+        fs.renameSync(file2.path, newPath2)
+
+        let cccdFont = path.join('images', name1)
+        let cccdBeside = path.join('images', name2)
+
+        let sql = "update account set image_cccd_truoc = ?, image_cccd_sau = ?, status = ? where email = ?"
+        let param = [cccdFont, cccdBeside, "chờ xác minh",email]
+        db.query(sql, param, (e, results, fields) => {
+            if(e){
+                message = e.message
+                res.render('error', {message})
+            }else{
+                return res.send("Bổ sung thành công")
+            }
+        })
+    }
+
     // [POST] /users/login
+    // enter(req, res){
+    //     const {username, password} = req.body
+
+    //     let sql = "SELECT * FROM account WHERE username = ?"
+    //     let param = [username]
+    //     let message = ''
+    //     db.query(sql, param, (e, result, fields) => {
+    //         if(e){
+    //             message = e.message
+    //             res.render('error', {message})
+    //         }else if(result != ""){
+    //             const hash = result[0].password
+    //             const position = result[0].position
+    //             bcrypt.compare(password, hash)
+    //             .then(match => {
+    //                 if(match){
+    //                     if(position){
+    //                         req.session.name = result['0'].name
+    //                         req.session.username = username
+    //                         req.session.position = 1
+    //                         return res.redirect('/admin')
+    //                     }else{
+    //                         req.session.position = 0
+    //                         req.session.name = result['0'].name
+    //                         req.session.username = username
+    //                         req.session.email = result['0'].email
+    //                         return res.redirect('/users')
+    //                     }
+    //                 }else{
+    //                     message = 'password is not true'
+    //                     return res.render('login', {username, password, message})
+    //                 }
+    //             })
+    //             .catch(e => {
+    //                 res.render('error', {message: e.message})
+    //             })
+    //         }else{
+    //             message = 'username or password is not true'
+    //             return res.render('login', {username, password, message})
+    //         }
+    //     })
+    // }
+
     enter(req, res) {
         const { username, password } = req.body
 

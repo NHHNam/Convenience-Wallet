@@ -1,0 +1,38 @@
+{{!-- nav --}}
+
+{{>nav}}
+{{!-- end nav --}}
+
+{{!-- body --}}
+
+<div class="container mt-5 mb-5">
+    <h1>Kết quả giao dịch</h1>    
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Nhà mạng</th>
+                <th>Mệnh giá</th>
+                <th>Số seri thẻ</th>
+                <th>Thời gian</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each listCard}}
+                <tr>
+                    <td>{{inc @index}}</td>
+                    <td>{{network}}</td>
+                    <td>{{vnd cost}}</td>
+                    <td>{{codeCard}}</td>
+                    <td>{{date}} , {{time}}</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <a href="/users/services/codePhone" class="btn btn-success">Mua tiếp</a>
+    <a href="/users/services" class="btn btn-danger">Trang chủ</a>
+</div>
+
+
+
+{{!-- end body --}}

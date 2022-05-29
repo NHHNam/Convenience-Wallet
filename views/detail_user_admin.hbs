@@ -6,65 +6,178 @@
 <div class="container mt-5 mb-5">
     <h2>Chi tiết người dùng</h2>    
     <small>
-        <a href="/admin//list/user_wait">Back</a>
+        {{#if choXacMinh}}
+            <a href="/admin/list/user_wait">Back</a>
+        {{else if voHieuHoa}}
+            <a href="/admin/list/user_block_infinity">Back</a>
+        {{/if}}
     </small>
     <div class="shadow-none p-3 mb-5 bg-light rounded">
         {{#each data}}
             <div class="row">
                 <div class="col-lg-6">
-                    <label style="font-size: 20px; font-weight: 500;" for="">Email</label>
-                    <p>{{email}}</p>
+                    <div class="form-group">
+                        <label style="font-size: 20px; font-weight: 500;" for="">Email</label>
+                        <p class="form-control">{{email}}</p>
+                    </div>
                 </div>
                 <div class="col-lg-6">
-                    <label style="font-size: 20px; font-weight: 500;" for="">Name</label>
-                    <p>{{name}}</p>
+                    <div class="form-group">
+                        <label style="font-size: 20px; font-weight: 500;" for="">Name</label>
+                        <p class="form-control">{{name}}</p>
+                    </div>
                 </div>
             </div>
 
-            <div>
+            <div class="form-group">
+                <label style="font-size: 20px; font-weight: 500;" for="">Tình trạng</label>
+                <div class="form-control">{{status}}</div>
+            </div>
+
+            <div class="form-group">
                 <label style="font-size: 20px; font-weight: 500;" for="">SDT</label>
-                <div>{{sdt}}</div>
+                <div class="form-control">{{sdt}}</div>
             </div>
 
-            <div>
+            <div class="form-group">
                 <label style="font-size: 20px; font-weight: 500;" for="">Address</label>
-                <div>{{diachi}}</div>
+                <div class="form-control">{{diachi}}</div>
             </div>
 
-            <div>
+            <div class="form-group">
                 <label style="font-size: 20px; font-weight: 500;" for="">Username</label>
-                <div>{{username}}</div>
+                <div class="form-control">{{username}}</div>
             </div>
             <div class="row">
                 <div class="col-lg-6">
-                    <label style="font-size: 20px; font-weight: 500;" for="">CCCD mặt trước</label>
-                    <div><img style="max-width: 200px; max-height: 200px;" src="/{{image_cccd_truoc}}" alt=""></div>
+                    <div class="form-group">
+                        <label style="font-size: 20px; font-weight: 500;" for="">CCCD mặt trước</label>
+                        <div><img style="max-width: 200px; max-height: 200px;" src="/{{image_cccd_truoc}}" alt=""></div>
+                    </div>
                 </div>
 
                 <div class="col-lg-6">
-                    <label style="font-size: 20px; font-weight: 500;" for="">CCCD mặt sau</label>
-                    <div><img style="max-width: 200px; max-height: 200px;" src="/{{image_cccd_sau}}" alt=""></div>
-                </div>
-            </div>
-            <div class="row mt-5">
-                <div class="col-lg-4">
-                    <button class="btn btn-primary" data-email="{{email}}" id="approveBTN">Xác minh</button>
-                </div>
-
-                <div class="col-lg-4">
-                    <button class="btn btn-danger" data-email="{{email}}" id="cancelBTN">Hủy</button>
-                </div>
-
-                <div class="col-lg-4">
-                    <button class="btn btn-success" id="complementaryBTN">Yêu cầu bổ sung</button>
+                    <div class="form-group">
+                        <label style="font-size: 20px; font-weight: 500;" for="">CCCD mặt sau</label>
+                        <div><img style="max-width: 200px; max-height: 200px;" src="/{{image_cccd_sau}}" alt=""></div>
+                    </div>
                 </div>
             </div>
         {{/each}}
+        {{#if choXacMinh}}
+            <div class="row mt-5">
+                <div class="col-lg-4">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#xacMinh">Xác minh</button>
+                </div>
+
+                <div class="col-lg-4">
+                    <button class="btn btn-danger" data-toggle="modal" data-target="#cancel">Hủy</button>
+                </div>
+
+                <div class="col-lg-4">
+                    <button class="btn btn-success" data-toggle="modal" data-target="#addition">Yêu cầu bổ sung</button>
+                </div>
+            </div>
+        {{else if voHieuHoa}}
+            <div class="row mt-5">
+                <button class="btn btn-primary w-100" data-toggle="modal" data-target="#recovery">Khôi phuc</button>
+            </div>
+        {{/if}}
     </div>
     <div id="message"></div>
 </div>
 
+<!-- Modal Xác Minh -->
+<div class="modal fade" id="xacMinh" tabindex="-1" role="dialog" aria-labelledby="xacMinhModel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="xacMinhModel">Xác minh tài khoản</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {{#each data}}
+            <div class="modal-body">
+            Bạn có chắc muốn xác minh <strong>{{name}}</strong>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>    
+                <button type="button" class="btn btn-primary" id="approveBTN" data-email="{{email}}">Xác minh</button>
+            </div>
+        {{/each}}
+    </div>
+  </div>
+</div>
 
+<!-- Modal Huỷ -->
+<div class="modal fade" id="cancel" tabindex="-1" role="dialog" aria-labelledby="cancelModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="cancelModal">Vô hiệu hoá</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {{#each data}}
+            <div class="modal-body">
+            Bạn có chắc muốn vô hiệu hoá tài khoản của <strong>{{name}}</strong>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>    
+                <button type="button" class="btn btn-primary" id="cancelBTN" data-email="{{email}}">Vô hiệu hoá</button>
+            </div>
+        {{/each}}
+    </div>
+  </div>
+</div>
+
+<!-- Modal Yêu cầu bổ sung-->
+<div class="modal fade" id="addition" tabindex="-1" role="dialog" aria-labelledby="boSungModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="boSungModal">Bổ sung</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {{#each data}}
+            <div class="modal-body">
+            Bạn có chắc muốn yêu cầu bổ sung tài khoản của <strong>{{name}}</strong>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>    
+                <button type="button" class="btn btn-primary" id="complementaryBTN" data-email="{{email}}">Bổ sung</button>
+            </div>
+        {{/each}}
+    </div>
+  </div>
+</div>
+
+<!-- Modal khôi phục tài khoản -->
+<div class="modal fade" id="recovery" tabindex="-1" role="dialog" aria-labelledby="recoveryModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="recoveryModal">Khôi phuc</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {{#each data}}
+            <div class="modal-body">
+            Bạn có chắc muốn khôi phục tài khoản của <strong>{{name}}</strong>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>    
+                <button type="button" class="btn btn-primary" id="recoveryBTN" data-email="{{email}}">Khôi phục</button>
+            </div>
+        {{/each}}
+    </div>
+  </div>
+</div>
 {{!-- end body --}}
 
 
@@ -73,7 +186,8 @@
 <script>
     const complementaryBTN = document.getElementById('complementaryBTN'),
     cancelBTN = document.getElementById('cancelBTN'),
-    approveBTN = document.getElementById('approveBTN')
+    approveBTN = document.getElementById('approveBTN'),
+    recoveryBTN = document.getElementById('recoveryBTN')
 
     approveBTN.addEventListener('click', () => {
         let email = $('#approveBTN').attr('data-email')
@@ -87,12 +201,13 @@
 
         http.onreadystatechange = function() {//Call a function when the state changes.
             if(http.readyState == 4 && http.status == 200) {
+                $('#xacMinh').modal('hide')
                 $('#message').css('color', 'green')
                 $('#message').css('font-size', "20px")
                 $('#message').css('font-weight', '500')
                 $('#message').html(http.responseText)
                 setInterval(() => {
-                    location.href = '/admin//list/user_wait'
+                    location.href = '/admin/list/user_wait'
                 }, 3000)
             }
         }
@@ -112,12 +227,64 @@
 
         http.onreadystatechange = function() {//Call a function when the state changes.
             if(http.readyState == 4 && http.status == 200) {
+                $('#cancel').modal('hide')
+                $('#message').css('color', 'red')
+                $('#message').css('font-size', "20px")
+                $('#message').css('font-weight', '500')
+                $('#message').html(http.responseText)
+                setInterval(() => {
+                    location.href = '/admin/list/user_wait'
+                }, 3000)
+            }
+        }
+        http.send(params);
+    })
+
+    // 
+    complementaryBTN.addEventListener('click', () => {
+        let email = $('#complementaryBTN').attr('data-email')
+        var http = new XMLHttpRequest();
+        var url = `http://localhost:5000/admin/additionalRequest/`;
+        var params = `email=${email}`;
+        http.open('POST', url, true);
+
+        //Send the proper header information along with the request
+        http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+        http.onreadystatechange = function() {//Call a function when the state changes.
+            if(http.readyState == 4 && http.status == 200) {
+                $('#addition').modal('hide')
                 $('#message').css('color', 'red')
                 $('#message').css('font-size', "20px")
                 $('#message').css('font-weight', '500')
                 $('#message').html(http.responseText)
                 setInterval(() => {
                     location.href = '/admin//list/user_wait'
+                }, 3000)
+            }
+        }
+        http.send(params);
+    })
+
+    recoveryBTN.addEventListener('click', () => {
+        let email = $('#cancelBTN').attr('data-email')
+        var http = new XMLHttpRequest();
+        var url = `http://localhost:5000/admin/recoveryAccount/`;
+        var params = `email=${email}`;
+        http.open('POST', url, true);
+
+        //Send the proper header information along with the request
+        http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+        http.onreadystatechange = function() {//Call a function when the state changes.
+            if(http.readyState == 4 && http.status == 200) {
+                $('#recovery').modal('hide')
+                $('#message').css('color', 'red')
+                $('#message').css('font-size', "20px")
+                $('#message').css('font-weight', '500')
+                $('#message').html(http.responseText)
+                setInterval(() => {
+                    location.href = '/admin/list/user_block_infinity'
                 }, 3000)
             }
         }

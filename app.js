@@ -15,7 +15,7 @@ const walletRouter = require('./routes/wallet')
 const app = express();
 var sess = {
   secret: 'secret key',
-  cookie: { maxAge: 60000 },
+  // cookie: { maxAge: 60000 },
 }
 
 

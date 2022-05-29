@@ -45,6 +45,8 @@ router.post('/passwordFirst', checkLogin, userController.changeFirstPassword)
 
 router.get('/information', checkLogin, userController.informaiton)
 
+router.post('/information', checkLogin, cpUpload, userController.additionInformation)
+
 // get name for transfer
 router.post('/getName', checkLogin, userController.getName)
 
@@ -73,5 +75,11 @@ router.post('/services/otpTransfer', checkLogin, checkChangePasswordFirst, userC
 //service history
 router.get('/services/history', checkLogin, checkChangePasswordFirst, userController.historyService)
 
+// service buy code phone
+router.get('/services/codePhone', checkLogin, checkChangePasswordFirst, userController.preCodePhone)
+
+router.post('/services/codePhone', checkLogin, checkChangePasswordFirst, userController.codePhone)
+
+router.get('/services/resBuyCard', checkLogin, checkChangePasswordFirst, userController.resultBuyCard)
 
 module.exports = router;

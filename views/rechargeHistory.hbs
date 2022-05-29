@@ -7,7 +7,8 @@
 
 
 <div class="container mt-5 mb-5">
-    <h2>Lịch sử giao dịch</h2>    
+    <h1>Lịch sử giao dịch</h1>    
+    <h3>Dịch vụ rút và nạp tiền</h3>
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -28,6 +29,58 @@
                     <td>{{dateRecharge}}</td>
                     <td>{{timeRecharge}}</td>
                     <td>{{status}}</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <br>
+    <h3>Dịch vụ chuyển tiền</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Loại</th>
+                <th>Số tiền</th>
+                <th>Ngày</th>
+                <th>Thời gian</th>
+                <th>Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each dataTransfer}}
+                <tr>
+                    <td>{{inc @index}}</td>
+                    <td>Chuyển tiền</td>
+                    <td><a href="">{{vnd money}}</a></td>
+                    <td>{{date}}</td>
+                    <td>{{time}}</td>
+                    <td>{{status}}</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <br>
+    <h3>Dịch vụ mua thẻ cào</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Nhà mạng</th>
+                <th>Mệnh giá</th>
+                <th>Mã Thẻ</th>
+                <th>Ngày</th>
+                <th>Thời gian</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each dataCodeCard}}
+                <tr>
+                    <td>{{inc @index}}</td>
+                    <td>{{network}}</td>
+                    <td><a href="">{{vnd cost}}</a></td>
+                    <td>{{codeCard}}</td>
+                    <td>{{date}}</td>
+                    <td>{{time}}</td>
                 </tr>
             {{/each}}
         </tbody>

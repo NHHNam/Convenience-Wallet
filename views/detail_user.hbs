@@ -12,48 +12,142 @@
         {{#each data}}
             <div class="row">
                 <div class="col-lg-6">
-                    <label style="font-size: 20px; font-weight: 500;" for="">Email</label>
-                    <p>{{email}}</p>
+                    <div class="form-group">
+                        <label style="font-size: 20px; font-weight: 500;" for="">Email</label>
+                        <p class="form-control">{{email}}</p>
+                    </div>
                 </div>
                 <div class="col-lg-6">
-                    <label style="font-size: 20px; font-weight: 500;" for="">Name</label>
-                    <p>{{name}}</p>
+                    <div class="form-group">
+                        <label style="font-size: 20px; font-weight: 500;" for="">Name</label>
+                        <p class="form-control">{{name}}</p>
+                    </div>
                 </div>
             </div>
 
-            <div>
+            <div class="form-group">
+                <label style="font-size: 20px; font-weight: 500;" for="">Tình trạng</label>
+                <div class="form-control">{{status}}</div>
+            </div>
+
+            <div class="form-group">
                 <label style="font-size: 20px; font-weight: 500;" for="">SDT</label>
-                <div>{{sdt}}</div>
+                <div class="form-control">{{sdt}}</div>
             </div>
 
-            <div>
+            <div class="form-group">
                 <label style="font-size: 20px; font-weight: 500;" for="">Address</label>
-                <div>{{diachi}}</div>
+                <div class="form-control">{{diachi}}</div>
             </div>
 
-            <div>
+            <div class="form-group">
                 <label style="font-size: 20px; font-weight: 500;" for="">Username</label>
-                <div>{{username}}</div>
+                <div class="form-control">{{username}}</div>
             </div>
             <div class="row">
                 <div class="col-lg-6">
-                    <label style="font-size: 20px; font-weight: 500;" for="">CCCD mặt trước</label>
-                    <div><img style="max-width: 200px; max-height: 200px;" src="/{{image_cccd_truoc}}" alt=""></div>
+                    <div class="form-group">
+                        <label style="font-size: 20px; font-weight: 500;" for="">CCCD mặt trước</label>
+                        <div><img style="max-width: 200px; max-height: 200px;" src="/{{image_cccd_truoc}}" alt=""></div>
+                    </div>
                 </div>
 
                 <div class="col-lg-6">
-                    <label style="font-size: 20px; font-weight: 500;" for="">CCCD mặt sau</label>
-                    <div><img style="max-width: 200px; max-height: 200px;" src="/{{image_cccd_sau}}" alt=""></div>
+                    <div class="form-group">
+                        <label style="font-size: 20px; font-weight: 500;" for="">CCCD mặt sau</label>
+                        <div><img style="max-width: 200px; max-height: 200px;" src="/{{image_cccd_sau}}" alt=""></div>
+                    </div>
                 </div>
             </div>
         {{/each}}
     </div>
-    <div id="message"></div>
+    <div id="messages"></div>
+    {{#if order}}
+        <button class="w-100 btn btn-primary" data-toggle="modal" data-target="#exampleModal">Bổ sung</button>
+    {{/if}}
 </div>
 
-
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Bổ sung</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+           <div class="form-group">
+                <label for="">Uplaod CMND Trước</label>
+                <input type="file" accept="image/*" class="form-control" id="attachment1">
+            </div>
+            <div class="form-group">
+                <label for="">Uplaod CMND Sau</label>
+                <input type="file" accept="image/*" class="form-control" id="attachment2">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            {{#each data}}
+                <button type="button" class="btn btn-primary" id="btnBoSung" data-email="{{email}}">Bổ sung</button>
+            {{/each}}
+        </div>
+    </div>
+  </div>
+</div>
 {{!-- end body --}}
 
 
 {{!-- script js --}}
 
+<script>
+    $(document).ready(() => {
+
+        $('#btnBoSung').click(() => {
+            let email = $('#btnBoSung').attr('data-email')
+            let uploadFile1 = document.getElementById('attachment1')
+            let uploadFile2 = document.getElementById('attachment2')
+            console.log(uploadFile1.files)
+            console.log(uploadFile2.files)
+            if(uploadFile1.files.length == 0 || uploadFile2.files.length == 0){
+                return alert('Vui lòng chọn tập tin ')
+            }
+            
+            let file1 = uploadFile1.files[0]
+            let file2 = uploadFile2.files[0]
+
+            let form = new FormData()
+            form.set('email', email)
+            form.set('attachment1', file1)
+            form.set('attachment2', file2)
+
+            let xhr = new XMLHttpRequest()
+            xhr.open('POST', 'http://localhost:5000/users/information', true)
+            xhr.addEventListener('load', e => {
+                if(xhr.readyState === 4 && xhr.status === 200){
+                    $('#exampleModal').modal('hide')
+
+                    $('#messages').css('color', 'green')
+                    $('#messages').css('font-size', "20px")
+                    $('#messages').css('font-weight', '500')
+                    $('#messages').html(xhr.responseText)
+
+                    setInterval(() => {
+                        location.href = '/users/information'
+                    }, 3000)
+                }
+            })
+
+            let spinner = `
+                <div class="spinner-border text-light" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            `
+            $('#btnBoSung').html(spinner)
+
+            xhr.send(form) // bắt đầu upload
+        })
+
+    })
+</script>
