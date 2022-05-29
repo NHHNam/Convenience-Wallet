@@ -967,13 +967,13 @@ class UserController {
                         } else {
                             const error = result[0].error;
 
-                            if (error == 5) {
+                            if (error == 4) {
                                 let sql = "UPDATE `account` SET `blocked` = 1 WHERE `username` = ?";
                                 let param = [username];
                                 db.query(sql, param, (e, result, fields) => {
                                     if (e) {
                                         message = e.message
-                                        res.render('error', { message })
+                                        return res.render('error', { message })
                                     }
                                 })
                                 message = 'Tài khoản của bạn đã bị khóa do nhập sai mật khẩu nhiều lần, vui lòng liên hệ quản trị viên để được hổ trợ'
@@ -989,7 +989,7 @@ class UserController {
                                     db.query(sql, param, (e, result, fields) => {
                                         if (e) {
                                             message = e.message
-                                            res.render('error', { message })
+                                            return res.render('error', { message })
                                         }
                                     })
                                     message = 'password is not true'
