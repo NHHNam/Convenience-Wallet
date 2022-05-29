@@ -917,49 +917,107 @@ class UserController{
     }
 
     // [POST] /users/login
-    enter(req, res){
-        const {username, password} = req.body
+        enter(req, res) {
+        const { username, password } = req.body
 
         let sql = "SELECT * FROM account WHERE username = ?"
         let param = [username]
         let message = ''
         db.query(sql, param, (e, result, fields) => {
-            if(e){
+            if (e) {
                 message = e.message
-                res.render('error', {message})
-            }else if(result != ""){
+                res.render('error', { message })
+            } else if (result != "") {
                 const hash = result[0].password
                 const position = result[0].position
                 bcrypt.compare(password, hash)
-                .then(match => {
-                    if(match){
-                        if(position){
-                            req.session.name = result['0'].name
-                            req.session.username = username
-                            req.session.position = 1
-                            return res.redirect('/admin')
-                        }else{
-                            req.session.position = 0
-                            req.session.name = result['0'].name
-                            req.session.username = username
-                            req.session.email = result['0'].email
-                            return res.redirect('/users')
+                    .then(match => {
+                        if (match) {
+                            var time = new Date()
+                            if (result[0].blocked == 1) {
+                                message = 'Tài khoản của bạn đã bị khóa do nhập sai mật khẩu nhiều lần, vui lòng liên hệ quản trị viên để được hổ trợ'
+                                return res.render('login', { username, password, message })
+                            }
+                            if (result[0].disabled == 1) {
+                                message = 'Tài khoản đã bị vô hiệu hóa, vui lòng liên hệ tổng đài 18001008'
+                                return res.render('login', { username, password, message })
+                            }
+                            if (result[0].error == 3 && time - result[0].error_date < 100000) {
+                                message = 'Tài khoản hiện đang bị khóa, vui lòng thử lại sau 1 phút'
+                                return res.render('login', { username, password, message });
+                            }
+                            db.query("UPDATE `account` SET `error`= 0 WHERE `username` = ?", [username], (e, result, fields) => {
+                                if (e) {
+                                    message = e.message
+                                    res.render('error', { message })
+                                }
+                            })
+                            if (position) {
+                                req.session.name = result['0'].name
+                                req.session.username = username
+                                req.session.position = 1
+                                return res.redirect('/admin')
+                            } else {
+                                req.session.position = 0
+                                req.session.name = result['0'].name
+                                req.session.username = username
+                                req.session.email = result['0'].email
+                                return res.redirect('/users')
+                            }
+                        } else {
+                            const error = result[0].error;
+                            if (error == 6) {
+                                let sql = "UPDATE `account` SET `blocked` = 1 WHERE `username` = ?";
+                                let param = [username];
+                                db.query(sql, param, (e, result, fields) => {
+                                    if (e) {
+                                        message = e.message
+                                        res.render('error', { message })
+                                    }
+                                })
+                                message = 'Tài khoản của bạn đã bị khóa do nhập sai mật khẩu nhiều lần, vui lòng liên hệ quản trị viên để được hổ trợ'
+                                return res.render('login', { username, password, message })
+                            }
+                            if (error == 3) {
+                                var time = new Date()
+                                if (time - result[0].error_date >= 100000) {
+                                    let sql = "UPDATE `account` SET `error`= error + 1 WHERE `username` = ?";
+                                    let param = [username];
+                                    db.query(sql, param, (e, result, fields) => {
+                                        if (e) {
+                                            message = e.message
+                                            res.render('error', { message })
+                                        }
+                                    })
+                                    message = 'password is not true'
+                                    return res.render('login', { username, password, message })
+                                }
+                                message = 'Tài khoản hiện đang bị khóa, vui lòng thử lại sau 1 phút'
+                                return res.render('login', { username, password, message })
+                            }
+
+                            let sql = "UPDATE `account` SET `error`= error + 1 WHERE `username` = ?";
+                            let param = [username];
+                            db.query(sql, param, (e, result, fields) => {
+                                if (e) {
+                                    message = e.message
+                                    res.render('error', { message })
+                                }
+                            })
+
+                            message = 'password is not true'
+                            return res.render('login', { username, password, message })
                         }
-                    }else{
-                        message = 'password is not true'
-                        return res.render('login', {username, password, message})
-                    }
-                })
-                .catch(e => {
-                    res.render('error', {message: e.message})
-                })
-            }else{
+                    })
+                    .catch(e => {
+                        res.render('error', { message: e.message })
+                    })
+            } else {
                 message = 'username or password is not true'
-                return res.render('login', {username, password, message})
+                return res.render('login', { username, password, message })
             }
         })
     }
-
     get_forget(req, res) {
         res.render('forget')
     }
