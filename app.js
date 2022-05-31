@@ -10,7 +10,6 @@ const session = require('express-session')
 
 const adminRouter = require('./routes/admin');
 const usersRouter = require('./routes/users');
-const walletRouter = require('./routes/wallet')
 
 const app = express();
 var sess = {
@@ -47,7 +46,6 @@ app.use(function(req, res, next){
 
 app.use('/admin', adminRouter);
 app.use('/users', usersRouter);
-app.use('/walletRouter', walletRouter);
 
 app.get('/', (req, res) => {
   res.redirect('/users/login')

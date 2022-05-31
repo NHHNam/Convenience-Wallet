@@ -36,7 +36,7 @@
         <p class="error_login">{{message}}</p>
         {{/if}}
     </div>
-    <button class="btn_login" id="btnRegister">Submit</button>
+    <button class="btn_login btn btn-primary w-100" id="btnRegister">Đăng ký</button>
     <div id="message"></div>
 </div>
 
@@ -75,13 +75,23 @@
             xhr.open('POST', 'http://localhost:5000/users/signup', true)
             xhr.addEventListener('load', e => {
                 if(xhr.readyState === 4 && xhr.status === 200){
-                    $('#message').css('color', 'green')
-                    $('#message').css('font-size', "20px")
-                    $('#message').css('font-weight', '500')
-                    $('#message').html(xhr.responseText)
-                    setInterval(() => {
-                        location.href = '/users/login'
-                    }, 3000)
+                    let obj = JSON.parse(xhr.responseText)
+                    if(obj.code === 0){
+                        $('#message').css('color', 'green')
+                        $('#message').css('font-size', "20px")
+                        $('#message').css('font-weight', '500')
+                        $('#message').html(obj.message)
+                        setInterval(() => {
+                            location.href = '/users/login'
+                        }, 3000)
+
+                    }else{
+                        $('#message').css('color', 'red')
+                        $('#message').css('font-size', "20px")
+                        $('#message').css('font-weight', '500')
+                        $('#message').html(obj.message)
+                        $('#btnRegister').html('Đăng ký')
+                    }
                 }
             })
 

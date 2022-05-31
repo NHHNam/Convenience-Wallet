@@ -7,6 +7,7 @@ const multer  = require('multer')
 const checkChangePasswordFirst = require('../auth/checkChangePasswordFirst')
 const checkNapTien = require('./validators/napTien.validator')
 const checkRutTien = require('./validators/rutTien.validators')
+const checkAccept = require('../auth/checkAcceptAccount')
 
 const Path = require('path')
 const pathSave = Path.join(__dirname,'../uploads')
@@ -48,38 +49,50 @@ router.get('/information', checkLogin, userController.informaiton)
 router.post('/information', checkLogin, cpUpload, userController.additionInformation)
 
 // get name for transfer
-router.post('/getName', checkLogin, userController.getName)
+router.post('/getName', checkLogin, checkAccept, userController.getName)
 
 // services
-router.get('/services', checkLogin, checkChangePasswordFirst, userController.service)
+router.get('/services', checkLogin, checkChangePasswordFirst, checkAccept, userController.service)
 // service naptien
 // [GET]
-router.get('/services/nopTien', checkLogin, checkChangePasswordFirst,userController.preNapTien)
+router.get('/services/nopTien', checkLogin, checkChangePasswordFirst, checkAccept, userController.preNapTien)
 // [POST]
-router.post('/services/nopTien', checkLogin, checkChangePasswordFirst,checkNapTien, userController.napTien)
+router.post('/services/nopTien', checkLogin, checkChangePasswordFirst, checkAccept, checkNapTien, userController.napTien)
 
 //service ruttien
-router.get('/services/rutTien', checkLogin, checkChangePasswordFirst, userController.preRutTien)
+router.get('/services/rutTien', checkLogin, checkChangePasswordFirst, checkAccept, userController.preRutTien)
 
-router.post('/services/rutTien', checkLogin, checkChangePasswordFirst, checkRutTien, userController.rutTien)
+router.post('/services/rutTien', checkLogin, checkChangePasswordFirst, checkAccept, checkRutTien, userController.rutTien)
 
 //service chuyen tien
-router.get('/services/transfer', checkLogin, checkChangePasswordFirst, userController.preTransfer)
+router.get('/services/transfer', checkLogin, checkChangePasswordFirst, checkAccept, userController.preTransfer)
 
-router.post('/services/transfer', checkLogin, checkChangePasswordFirst, userController.Transfer)
+router.post('/services/transfer', checkLogin, checkChangePasswordFirst, checkAccept, userController.Transfer)
 
-router.get('/services/otpTransfer', checkLogin, checkChangePasswordFirst, userController.enterOTP)
+router.get('/services/otpTransfer', checkLogin, checkChangePasswordFirst, checkAccept, userController.enterOTP)
 
-router.post('/services/otpTransfer', checkLogin, checkChangePasswordFirst, userController.transferMoney)
+router.post('/services/otpTransfer', checkLogin, checkChangePasswordFirst, checkAccept, userController.transferMoney)
 
 //service history
-router.get('/services/history', checkLogin, checkChangePasswordFirst, userController.historyService)
+router.get('/services/history', checkLogin, checkChangePasswordFirst, checkAccept, userController.historyService)
 
 // service buy code phone
-router.get('/services/codePhone', checkLogin, checkChangePasswordFirst, userController.preCodePhone)
+router.get('/services/codePhone', checkLogin, checkChangePasswordFirst, checkAccept, userController.preCodePhone)
 
-router.post('/services/codePhone', checkLogin, checkChangePasswordFirst, userController.codePhone)
+router.post('/services/codePhone', checkLogin, checkChangePasswordFirst, checkAccept, userController.codePhone)
 
-router.get('/services/resBuyCard', checkLogin, checkChangePasswordFirst, userController.resultBuyCard)
+router.get('/services/resBuyCard', checkLogin, checkChangePasswordFirst, checkAccept, userController.resultBuyCard)
+
+// detail nop rut, chuyen tien
+// [GET] /users/services/detailNopRut/:id
+router.get('/services/detailNopRut/:id', checkLogin, checkChangePasswordFirst, checkAccept, userController.detailNopRut)
+// [GET] /users/services/detailTransfer/:id
+router.get('/services/detailTransfer/:id', checkLogin, checkChangePasswordFirst, checkAccept, userController.detailTransfer)
+
+// [GET] /users/changePWD
+router.get('/changePWD', checkLogin, checkChangePasswordFirst, userController.preChangePWD)
+
+// [POST] /users/changePWD
+router.post('/changePWD', checkLogin, checkChangePasswordFirst, userController.changePWD)
 
 module.exports = router;

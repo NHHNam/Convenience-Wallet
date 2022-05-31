@@ -1,5 +1,34 @@
 const db = require('../models/db')
 
+const nodemailer = require('nodemailer')
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.PASSWORD
+    }
+  })
+function sendTransferMail(email, message, req, res){
+    const mailOptions = {
+        from: process.env.EMAIL,
+        to: email,
+        subject: 'Chuyển tiền',
+        text: message
+    }
+
+    transporter.sendMail(mailOptions, (err, info) => {
+        if(err){
+        console.log(err)
+        }else{
+            console.log('Email sent')
+            return res.send('Chấp thuận thành công')
+        }
+    })
+}
+
 function chuyenTien(emailSend, emailReceived, moneyTransfer, fee, req, res){
     if(fee === "receive"){
         db.query("update surplusAccount set surplus = surplus - ? where email = ?", [moneyTransfer, emailSend], (e, results, fields) => {
@@ -11,7 +40,8 @@ function chuyenTien(emailSend, emailReceived, moneyTransfer, fee, req, res){
                     if(err){
                         console.log(err)
                     }else{
-                        return res.send('Chấp thuận thành công')
+                        let money = parseInt(moneyTransfer).toLocaleString('vi', {style : 'currency', currency : 'VND'})
+                        sendTransferMail(emailReceived, `Bạn đã được chuyển khoản từ ${emailSend} với số tiền là ${money} VND`, req, res)
                     }
                 })
             }
@@ -26,7 +56,8 @@ function chuyenTien(emailSend, emailReceived, moneyTransfer, fee, req, res){
                     if(err){
                         console.log(err)
                     }else{
-                        return res.send('Chấp thuận thành công')
+                        let money = parseInt(moneyTransfer).toLocaleString('vi', {style : 'currency', currency : 'VND'})
+                        sendTransferMail(emailReceived, `Bạn đã được chuyển khoản từ ${emailSend} với số tiền là ${money} VND`, req, res)
                     }
                 })
             }
@@ -80,8 +111,8 @@ class AdminController{
 
     // [GET] /admin/list/user_block
     list_block(req, res){
-        let sql = "SELECT * FROM account WHERE status = ? and username != ?"
-        let param = ["lock", "admin"]
+        let sql = "SELECT * FROM account WHERE username != ? and activated = ?"
+        let param = ["admin", 0]
         db.query(sql, param, (err, resulst, fields) => {
             if(err){
                 return res.render('error', {message: err.message})
@@ -96,8 +127,8 @@ class AdminController{
 
     // [GET] /admin/list/user_block_infinity
     list_block_infinity(req, res){
-        let sql = "SELECT * FROM account WHERE status = ? and username != ?"
-        let param = ["đã vô hiệu hóa", "admin"]
+        let sql = "SELECT * FROM account WHERE status = ? and username != ? or blocked = ?"
+        let param = ["đã vô hiệu hóa", "admin", 1]
         db.query(sql, param, (err, resulst, fields) => {
             if(err){
                 return res.render('error', {message: err.message})
@@ -157,7 +188,8 @@ class AdminController{
                         voHieuHoa: voHieuHoa,
                     }
                     return res.render('detail_user_admin', options)        
-                }else if(resulst[0].status === "chờ xác minh" || resulst[0].status === "yêu cầu bổ sung"){
+                }
+                else if(resulst[0].status === "chờ xác minh" || resulst[0].status === "yêu cầu bổ sung"){
                     let choXacMinh = true
                     let options = {
                         name: req.session.name,
@@ -182,8 +214,8 @@ class AdminController{
     // [POST] /admin/approveActivated
     approve_activated_account(req, res){
         let email = req.body.email
-        let sql = "update account set status = ? where email = ?"
-        let param = ["đã xác minh", email]
+        let sql = "update account set status = ?, activated = ? where email = ?"
+        let param = ["đã xác minh", 1, email]
         db.query(sql, param, (err, resulst, fields) => {
             if(err){
                 return res.render('error', {message: err.message})
@@ -194,19 +226,19 @@ class AdminController{
         })
     }
      // [POST] /admin/cancelActivated
-     cancel_activated_account(req, res){
-        let email = req.body.email
-        let sql = "update account set status = ? where email = ?"
-        let param = ["đã vô hiệu hóa", email]
-        db.query(sql, param, (err, resulst, fields) => {
-            if(err){
-                return res.render('error', {message: err.message})
-            }
-            if(resulst.affectedRows === 1){
-                return res.send('Vô hiệu hoá tài khoản thành công')
-            }
-        })
-     }
+    cancel_activated_account(req, res){
+    let email = req.body.email
+    let sql = "update account set status = ? where email = ?"
+    let param = ["đã vô hiệu hóa", email]
+    db.query(sql, param, (err, resulst, fields) => {
+        if(err){
+            return res.render('error', {message: err.message})
+        }
+        if(resulst.affectedRows === 1){
+            return res.send('Vô hiệu hoá tài khoản thành công')
+        }
+    })
+    }
 
     // [POST] /admin/additionalRequest/
     additionalRequest(req, res){
@@ -226,8 +258,8 @@ class AdminController{
     // [POST] /admin/recoveryAccount/
     recoveryAccount(req, res){
         let email = req.body.email
-        let sql = "update account set status = ? where email = ?"
-        let param = ["chờ xác minh", email]
+        let sql = "update account set status = ?, blocked = ?, error = ? where email = ?"
+        let param = ["chờ xác minh", 0, 0, email]
         db.query(sql, param, (err, resulst, fields) => {
             if(err){
                 return res.render('error', {message: err.message})
@@ -241,6 +273,7 @@ class AdminController{
     // [GET] /admin/detailNopRut/:id
     detailNopRut(req, res){
         let id = req.params.id
+        let position = req.session.position
         db.query("select * from historyServices where id = ?", [id], (err, results, fields) => {
             if(err){
                 return res.render('error', {message: err.message})
@@ -248,6 +281,7 @@ class AdminController{
                 let options = {
                     data: results,
                     name: req.session.name,
+                    position: position,
                 }
                 return res.render('detailNopRut', options)
             }
@@ -257,6 +291,7 @@ class AdminController{
     // [GET] /admin/detailTransfer/:id
     detailTransfer(req, res){
         let id = req.params.id
+        let position = req.session.position
         db.query("select * from historyTransfer where id = ?", [id], (err, results, fields) => {
             if(err){
                 return res.render('error', {message: err.message})
@@ -264,6 +299,7 @@ class AdminController{
                 let options = {
                     data: results,
                     name: req.session.name,
+                    position: position,
                 }
                 return res.render('detailTransfer', options)
             }
@@ -283,13 +319,23 @@ class AdminController{
                         return res.render('error', {message: err.message})
                     }else{
                         console.log(kq)
-                        db.query("update surplusAccount set surplus = surplus + ? where email = ?", [kq.recharge, kq.email], (e, ress, fss) => {
-                            if(e){
-                                return res.render('error', {message: e.message})
-                            }else{
-                                return res.send('Chấp thuận yêu cầu thành công')
-                            }
-                        })
+                        if(kq.type === "Nạp tiền"){
+                            db.query("update surplusAccount set surplus = surplus + ? where email = ?", [kq.recharge, kq.email], (e, ress, fss) => {
+                                if(e){
+                                    return res.render('error', {message: e.message})
+                                }else{
+                                    return res.send('Chấp thuận yêu cầu nạp tiền thành công')
+                                }
+                            })
+                        }else{
+                            db.query("update surplusAccount set surplus = surplus - ? where email = ?", [kq.recharge, kq.email], (e, ress, fss) => {
+                                if(e){
+                                    return res.render('error', {message: e.message})
+                                }else{
+                                    return res.send('Chấp thuận yêu cầu rút tiền thành công')
+                                }
+                            })
+                        }
                     }
                 })
             }

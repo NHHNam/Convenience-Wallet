@@ -6,10 +6,11 @@
 {{!-- body --}}
 
 <div class="container mb-5 mt-5">
-    <form method="post">
+    <h1 class="brand-object">Chuyển tiền</h1>
+    <form method="post" class="shadow-none p-3 mb-5 bg-light rounded">
         <div class="form-group">
             <label for="">Số điện thoại người nhận</label>
-            <input type="text" class="form-control" name="sdt" onkeyup="search(this)">
+            <input type="text" class="form-control" name="sdt" id="sdt" onkeyup="search(this)">
         </div>
         <div class="form-group">
             <label for="">Tên người nhận</label>
@@ -17,7 +18,7 @@
         </div>
         <div class="form-group">
             <label for="">Ghi chú</label>
-             <textarea name="note" class="form-control" cols="30" rows="10"></textarea>
+             <textarea name="note" class="form-control" cols="30" rows="10" id="note"></textarea>
         </div>
 
         <div class="form-control">
@@ -32,8 +33,16 @@
             <label for="">Số tiền chuyển</label>
             <input type="number" class="form-control" id="transferMoney" name="transferMoney">
         </div>
+        <div class="row">
+            <div class="col-lg-6 col-sm-12">
+                <button class="btn btn-info w-100" id="refreshBTN">Làm mới</button>
+            </div>
+
+            <div class="col-lg-6 col-sm-12">
+                <input type="submit" value="Chuyển tiền" id="chuyenBTN" class="bnt btn-success w-100" style="padding: 10px; outline: none; border: none; border-radius: 10px;">
+            </div>
+        </div>
         
-        <input type="submit" value="Chuyển tiền" id="chuyenBTN" class="bnt btn-success w-100" style="padding: 10px; outline: none; border: none; border-radius: 10px;">
     </form>
 </div>
 
@@ -43,6 +52,18 @@
 {{!-- script --}}
 
 <script>
+
+    
+    const refreshBTN = document.getElementById('refreshBTN')
+
+    refreshBTN.addEventListener('click', (e) => {
+        e.preventDefault()
+        $('#sdt').val('')
+        $('#nameReceive').val('')
+        $('#note').html('')
+        $('#transferMoney').val('')
+    })
+
     function search(word){
         if(word.value.length === 10){
             getNameRecevie(word.value)

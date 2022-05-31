@@ -5,7 +5,7 @@ const fs = require('fs')
 const otpGenerator = require('otp-generator')
 const saltRounds = 10
 const nodemailer = require('nodemailer')
-const {validationResult} = require('express-validator')
+const {validationResult} = require('express-validator');
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -54,6 +54,29 @@ function sendOTP(email, message, req, res){
         }else{
             console.log('Email sent')
             return res.redirect('/users/services/otpTransfer')
+        }
+    })
+}
+
+function sendTransferMail(email, message, req, res){
+    const mailOptions = {
+        from: process.env.EMAIL,
+        to: email,
+        subject: 'Chuyển tiền',
+        text: message
+    }
+
+    transporter.sendMail(mailOptions, (err, info) => {
+        if(err){
+        console.log(err)
+        }else{
+            console.log('Email sent')
+            req.session.flash = {
+                type: 'success',
+                intro: 'Thành công',
+                message: 'Chuyển tiền thành công',
+            }
+            return res.redirect('/users/services/transfer')
         }
     })
 }
@@ -203,12 +226,8 @@ function chuyenTien(emailSend, emailReceived, moneyTransfer, noteTransfer, fee, 
                                 if(errr){
                                     console.log(errr)
                                 }else{
-                                    req.session.flash = {
-                                        type: 'success',
-                                        intro: 'Thành công',
-                                        message: 'Chuyển tiền thành công',
-                                    }
-                                    return res.redirect('/users/services/transfer')
+                                    let money = parseInt(moneyTransfer).toLocaleString('vi', {style : 'currency', currency : 'VND'})
+                                    sendTransferMail(emailReceived, `Bạn đã được chuyển khoản từ ${emailSend} với số tiền là ${money} VND`, req, res)
                                 }
                             })
                         }
@@ -289,8 +308,19 @@ class UserController{
                     message = e.message
                     res.render('error', {message})
                 }else{
-                    let surplus = result[0].surplus
-                    return res.render('index', {name, username, surplus})
+                    db.query("select * from account where email = ?", [email], (err, ress, fss) => {
+                        if(err){
+                            return res.render('error', {message: err.message})
+                        }else{
+                            let kq = ress[0]
+                            if(kq.status === "đã vô hiệu hóa"){
+                                return res.render('error', {message: 'Tài khoản này đã bị vô hiệu hóa, vui lòng liên hệ tổng đài 18001008'})
+                            }else{
+                                let surplus = result[0].surplus
+                                return res.render('index', {name, username, surplus})
+                            }
+                        }
+                    })
                 }
             })
         }else{
@@ -303,7 +333,16 @@ class UserController{
     changeFirst(req, res){
         let name = req.session.name
         let username = req.session.username
-        return res.render('changePasswordFirst', {name, username})
+        let email = req.session.email
+        db.query('select * from surplusAccount where email = ?', [email], (e, results, fields) => {
+            if(e){
+                return res.render('error', {message: e.message})
+            }else{
+                let surplus = results[0].surplus
+
+                return res.render('changePasswordFirst', {name, username, surplus})
+            }
+        })
     }
 
     //services
@@ -578,27 +617,51 @@ class UserController{
                                         message = err.message
                                         res.render('error', {message})
                                     }else{
-                                        if(parseInt(withdraw) > parseInt(ress[0].surplus)){
-                                            req.session.flash = {
-                                                type: 'danger',
-                                                intro: 'Lỗi',
-                                                message: 'Số tiền bạn rút về lớn hơn số có trong tài khoản',
-                                            }
-                                            req.session.codeCard = codeCard
-                                            req.session.expiredCard = expiredCard
-                                            req.session.codeCVV = codeCVV
-                                            req.session.withdraw = withdraw
-                                            req.session.note = note
-                                            return res.redirect('/users/services/rutTien')
-                                        }else{
-                                            if(parseInt(withdraw) >= 5000000){
-                                                status = "chờ duyệt"
-                                                rutTien(email, withdraw, codeCard, expiredCard, codeCVV, note, status, req, res)
+                                        let currentdate = new Date(); 
+
+                                        let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth()+1) + '-' + currentdate.getDate()
+                                        db.query("SELECT * FROM `historyServices` WHERE dateRecharge = ? and type = ? and email = ?", [date, "Rút tiền", email], (errors, resultsss, fieldssss) => {
+                                            if(errors){
+                                                return res.render('error', {message: errors.message})
                                             }else{
-                                                status = "duyệt"
-                                                rutTien(email, withdraw, codeCard, expiredCard, codeCVV, note, status, req, res)
+                                                if(resultsss.length >= 2){
+                                                    req.session.flash = {
+                                                        type: 'danger',
+                                                        intro: 'Lỗi',
+                                                        message: 'Số lần rút tiền về thẻ đã quá lượt rồi vui lòng đợi vào ngày mai',
+                                                    }
+                                                    req.session.codeCard = codeCard
+                                                    req.session.expiredCard = expiredCard
+                                                    req.session.codeCVV = codeCVV
+                                                    req.session.withdraw = withdraw
+                                                    req.session.note = note
+                                                    return res.redirect('/users/services/rutTien')
+                                                }else{
+                                                    if(parseInt(withdraw) > parseInt(ress[0].surplus)){
+                                                        req.session.flash = {
+                                                            type: 'danger',
+                                                            intro: 'Lỗi',
+                                                            message: 'Số tiền bạn rút về lớn hơn số có trong tài khoản',
+                                                        }
+                                                        req.session.codeCard = codeCard
+                                                        req.session.expiredCard = expiredCard
+                                                        req.session.codeCVV = codeCVV
+                                                        req.session.withdraw = withdraw
+                                                        req.session.note = note
+                                                        return res.redirect('/users/services/rutTien')
+                                                    }else{
+                                                        if(parseInt(withdraw) >= 5000000){
+                                                            status = "chờ duyệt"
+                                                            rutTien(email, withdraw, codeCard, expiredCard, codeCVV, note, status, req, res)
+                                                        }else{
+                                                            status = "duyệt"
+                                                            rutTien(email, withdraw, codeCard, expiredCard, codeCVV, note, status, req, res)
+                                                        }
+                                                    }
+                                                }
                                             }
-                                        }
+                                        })
+
                                     }
                                 })
                             }
@@ -656,15 +719,23 @@ class UserController{
                                         message = errs.message
                                         return res.render('error', {message})
                                     }else{
-                                        let options = {
-                                            name,
-                                            username, 
-                                            surplus,
-                                            data: ress.reverse(),
-                                            dataTransfer: resss.reverse(),
-                                            dataCodeCard: ressss.reverse(),
-                                        }        
-                                        return res.render('rechargeHistory', options)
+                                        db.query("select * from historyTransfer where emailReceive = ?", [email], (errs1, resss1, fsss1) => {
+                                            if(errs1){
+                                                message = errs1.message
+                                                return res.render('error', {message})
+                                            }else{
+                                                let options = {
+                                                    name,
+                                                    username, 
+                                                    surplus,
+                                                    data: ress.reverse(),
+                                                    dataTransfer: resss.reverse(),
+                                                    dataCodeCard: ressss.reverse(),
+                                                    dataReceived: resss1.reverse(),
+                                                }        
+                                                return res.render('rechargeHistory', options)
+                                            }
+                                        })
                                     }
                                 })
                             }
@@ -865,40 +936,58 @@ class UserController{
         let email = req.session.email
         const {network, menhGia, SL} = req.body
         req.session.listCard = null
-        db.query('select * from phoneNetwork where network = ?', [network], (err, results, fields) => {
-            if(err){
-                message = err.message
-                return res.render('error', {message})
+
+        db.query('select * from surplusAccount where email = ?', [email], (e1, res1, f1) => {
+            if(e1){
+                return res.render('error', {message: e1.message})
             }else{
-                let loop = parseInt(SL)
-                let listCard = []
-                for(let i = 0; i < loop; i++){
-                    let otp = otpGenerator.generate(5, { digits: true, lowerCaseAlphabets: false, specialChars: false, upperCaseAlphabets:false })
-                    let seriCard = results[0].code + "" + otp
-                    let currentdate = new Date(); 
-                    let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth()+1) + '-' + currentdate.getDate()
-                    let time = "" + currentdate.getHours() + ':' + currentdate.getMinutes() + ':' + currentdate.getSeconds()
-                    db.query("insert into historyCodeCard(email, network, codeCard, cost, date, time) values(?, ?, ?, ?, ?, ?)", [email, network, seriCard, menhGia, date, time], (e, ress, fss) => {
-                        if(e){
+                let kq = res1[0]
+                if(parseInt(kq.surplus) < parseInt(menhGia * SL)){
+                    req.session.flash = {
+                        type: 'danger',
+                        intro: 'Lỗi',
+                        message: 'Số tiền trong tài khoản không đủ để thanh toán',
+                    }
+                    return res.redirect('/users/services/codePhone')
+                }else{
+                    db.query('select * from phoneNetwork where network = ?', [network], (err, results, fields) => {
+                        if(err){
                             message = err.message
                             return res.render('error', {message})
                         }else{
-                            let sql1 = "update surplusAccount set surplus = surplus - ? where email = ?"
-                            let param1 = [parseInt(menhGia), email]
-                            db.query(sql1, param1, (errors, resultss, fieldsss) => {
-                                if(errors){
-                                    message = errors.message
-                                    return res.render('error', {message})
-                                }
-                            })
+                            let loop = parseInt(SL)
+                            let listCard = []
+                            for(let i = 0; i < loop; i++){
+                                let otp = otpGenerator.generate(5, { digits: true, lowerCaseAlphabets: false, specialChars: false, upperCaseAlphabets:false })
+                                let seriCard = results[0].code + "" + otp
+                                let currentdate = new Date(); 
+                                let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth()+1) + '-' + currentdate.getDate()
+                                let time = "" + currentdate.getHours() + ':' + currentdate.getMinutes() + ':' + currentdate.getSeconds()
+                                db.query("insert into historyCodeCard(email, network, codeCard, cost, date, time) values(?, ?, ?, ?, ?, ?)", [email, network, seriCard, menhGia, date, time], (e, ress, fss) => {
+                                    if(e){
+                                        message = err.message
+                                        return res.render('error', {message})
+                                    }else{
+                                        let sql1 = "update surplusAccount set surplus = surplus - ? where email = ?"
+                                        let param1 = [parseInt(menhGia), email]
+                                        db.query(sql1, param1, (errors, resultss, fieldsss) => {
+                                            if(errors){
+                                                message = errors.message
+                                                return res.render('error', {message})
+                                            }
+                                        })
+                                    }
+                                })
+                                listCard.push({codeCard: seriCard, network: network, cost: menhGia, date: date, time: time})
+                            }
+                            req.session.listCard = listCard
+                            res.redirect('/users/services/resBuyCard')
                         }
                     })
-                    listCard.push({codeCard: seriCard, network: network, cost: menhGia, date: date, time: time})
                 }
-                req.session.listCard = listCard
-                res.redirect('/users/services/resBuyCard')
             }
         })
+
 
     }
 
@@ -935,8 +1024,8 @@ class UserController{
         let pwd = req.body.pwd
         bcrypt.hash(pwd, saltRounds)
         .then(hash => {
-            let sql = "update account set password = ?, password_first = ? where username = ?"
-            let param = [hash, 1, username]
+            let sql = "update account set password = ?, password_first = ?, activated = ? where username = ?"
+            let param = [hash, 1, 1, username]
             db.query(sql, param, (e, result, fields) => {
                 if(e){
                     message = e.message
@@ -983,34 +1072,66 @@ class UserController{
         let cccdBeside = path.join('images', name2)
         let username = otpGenerator.generate(10, { digits: true, lowerCaseAlphabets: false, specialChars: false, upperCaseAlphabets:false })
         let password = otpGenerator.generate(6)
-        bcrypt.hash(password, saltRounds)
-        .then(hash => {
-            let sql = `insert into account(sdt, email, name, ngaysinh, diachi, image_cccd_truoc,
-                 image_cccd_sau, username, password, status, password_first, position, activated) 
-                 values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-            let param = [sdt, email, name, ngaysinh, diachi, cccdFont, cccdBeside, username, hash, "chờ xác minh", 0, 0, 0]
-            db.query(sql, param, (e, results, fields) => {
-                if(e){
-                    message = e.message
-                    res.render('error', {message})
-                }else{
-                    let sqls = "insert into surplusAccount(email, surplus) values(? ,?)"
-                    let param1 = [email, 0]
-                    db.query(sqls, param1, (errs, ress, fieldss) => {
-                        if(errs){
-                            message = errs.message
-                            res.render('error', {message})
-                        }
-                        console.log(ress)
-                    })
-                    sendUsPd(email, `Username: ${username}, Password: ${password}`)
-                    return res.send('Register completely')
-                }
-            })
 
-        })
-        .catch(e => {
-            console.log(e.message)
+        db.query('select * from account where sdt = ?', [sdt], (e1, res1, f1) => {
+            if(e1){
+                return res.render(e1.message)
+            }else{
+                if(res1.length > 0){
+                    return res.json({code: 1, message: "Số điện thoại đã tồn tại vui lòng chọn số khác"})
+                }else{
+                    db.query('select * from account where email = ?', [email], (e2, res2, f2) => {
+                        if(e2){
+                            return res.render(e2.message)
+                        }else{
+                            if(res2.length > 0){
+                                return res.json({code: 1, message: "Gmail đã tồn tại vui lòng chọn gmail khác"})
+                            }else{
+                                db.query('select * from account where username = ?', [username], (e3, res3, f3) => {
+                                    if(e3){
+                                        return res.render(e3.message)
+                                    }else{
+                                        if(res3.length > 0){
+                                            username = otpGenerator.generate(10, { digits: true, lowerCaseAlphabets: false, specialChars: false, upperCaseAlphabets:false })
+                                        }else{
+                                            bcrypt.hash(password, saltRounds)
+                                            .then(hash => {
+                                                let timess = new Date()
+                                                let sql = `insert into account(sdt, email, name, ngaysinh, diachi, image_cccd_truoc,
+                                                    image_cccd_sau, username, password, status, password_first, position, activated, error, error_date, blocked, disabled) 
+                                                    values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+                                                let param = [sdt, email, name, ngaysinh, diachi, cccdFont, cccdBeside, username, hash, "chờ xác minh", 0, 0, 0, 0, timess, 0, 0]
+                                                db.query(sql, param, (e, results, fields) => {
+                                                    if(e){
+                                                        message = e.message
+                                                        res.render('error', {message})
+                                                    }else{
+                                                        let sqls = "insert into surplusAccount(email, surplus) values(? ,?)"
+                                                        let param1 = [email, 0]
+                                                        db.query(sqls, param1, (errs, ress, fieldss) => {
+                                                            if(errs){
+                                                                message = errs.message
+                                                                res.render('error', {message})
+                                                            }
+                                                            console.log(ress)
+                                                        })
+                                                        sendUsPd(email, `Username: ${username}, Password: ${password}`)
+                                                        return res.json({code: 0, message: "Register completely"})
+                                                    }
+                                                })
+
+                                            })
+                                            .catch(e => {
+                                                console.log(e.message)
+                                            })
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    })
+                }
+            }
         })
     }
 
@@ -1088,49 +1209,6 @@ class UserController{
         })
     }
 
-    // [POST] /users/login
-    // enter(req, res){
-    //     const {username, password} = req.body
-
-    //     let sql = "SELECT * FROM account WHERE username = ?"
-    //     let param = [username]
-    //     let message = ''
-    //     db.query(sql, param, (e, result, fields) => {
-    //         if(e){
-    //             message = e.message
-    //             res.render('error', {message})
-    //         }else if(result != ""){
-    //             const hash = result[0].password
-    //             const position = result[0].position
-    //             bcrypt.compare(password, hash)
-    //             .then(match => {
-    //                 if(match){
-    //                     if(position){
-    //                         req.session.name = result['0'].name
-    //                         req.session.username = username
-    //                         req.session.position = 1
-    //                         return res.redirect('/admin')
-    //                     }else{
-    //                         req.session.position = 0
-    //                         req.session.name = result['0'].name
-    //                         req.session.username = username
-    //                         req.session.email = result['0'].email
-    //                         return res.redirect('/users')
-    //                     }
-    //                 }else{
-    //                     message = 'password is not true'
-    //                     return res.render('login', {username, password, message})
-    //                 }
-    //             })
-    //             .catch(e => {
-    //                 res.render('error', {message: e.message})
-    //             })
-    //         }else{
-    //             message = 'username or password is not true'
-    //             return res.render('login', {username, password, message})
-    //         }
-    //     })
-    // }
 
     enter(req, res) {
         const { username, password } = req.body
@@ -1157,7 +1235,7 @@ class UserController{
                                 message = 'Tài khoản đã bị vô hiệu hóa, vui lòng liên hệ tổng đài 18001008'
                                 return res.render('login', { username, password, message })
                             }
-                            if (result[0].error == 3 && time - result[0].error_date < 100000) {
+                            if (result[0].error == 3 && time - result[0].error_date < 60000) {
                                 message = 'Tài khoản hiện đang bị khóa, vui lòng thử lại sau 1 phút'
                                 return res.render('login', { username, password, message });
                             }
@@ -1173,7 +1251,6 @@ class UserController{
                                 req.session.position = 1
                                 return res.redirect('/admin')
                             } else {
-                                req.session.position = 0
                                 req.session.name = result['0'].name
                                 req.session.username = username
                                 req.session.email = result['0'].email
@@ -1183,8 +1260,8 @@ class UserController{
                             const error = result[0].error;
 
                             if (error == 4) {
-                                let sql = "UPDATE `account` SET `blocked` = 1 WHERE `username` = ?";
-                                let param = [username];
+                                let sql = "UPDATE `account` SET `blocked` = ?, status = ? WHERE `username` = ?";
+                                let param = [1, "đã vô hiệu hóa",username];
                                 db.query(sql, param, (e, result, fields) => {
                                     if (e) {
                                         message = e.message
@@ -1269,6 +1346,131 @@ class UserController{
             })
         })
     }
+
+    // [GET] /users/services/detailNopRut/:id
+    detailNopRut(req, res){
+        let id = req.params.id
+        let email = req.session.email
+        db.query("select * from historyServices where id = ?", [id], (err, results, fields) => {
+            if(err){
+                return res.render('error', {message: err.message})
+            }else{
+                db.query('select * from surplusAccount where email = ?', [email], (e1, res1, f1) => {
+                    if(e1){
+                        return res.render('error', {message: e1.message})
+                    }else{
+                        let kq = res1[0].surplus
+                        let options = {
+                            data: results,
+                            name: req.session.name,
+                            surplus: kq
+                        }
+                        return res.render('detailNopRut', options)
+                    }  
+                })
+            }
+        })
+    }
+
+    // [GET] /users/services/detailTransfer/:id
+    detailTransfer(req, res){
+        let id = req.params.id
+        let email = req.session.email
+        db.query("select * from historyTransfer where id = ?", [id], (err, results, fields) => {
+            if(err){
+                return res.render('error', {message: err.message})
+            }else{
+
+                db.query('select * from surplusAccount where email = ?', [email], (e1, res1, f1) => {
+                    if(e1){
+                        return res.render('error', {message: e1.message})
+                    }else{
+                        let kq = res1[0].surplus
+                        let options = {
+                            data: results,
+                            name: req.session.name,
+                            surplus: kq,
+                        }
+                        return res.render('detailTransfer', options)
+                        
+                    }  
+                })
+
+            }
+        })
+    }
+
+    // [GET] /users/changePWD
+    preChangePWD(req, res){
+        let name = req.session.name
+        let username = req.session.username
+        let email = req.session.email
+        let sql = "select * from surplusAccount where email = ?"
+        let param = [email]
+        db.query(sql, param, (e, result, fields) => {
+            if(e){
+                message = e.message
+                return res.render('error', {message})
+            }else{
+                let surplus = result[0].surplus
+
+                let options = {
+                    name, 
+                    username, 
+                    surplus, 
+                }
+                return res.render('changePWD', options)
+
+            }
+        })
+    }
+
+    // [POST] /users/changePWD
+    changePWD(req, res){
+        const {username, pwdOld, pwdNew} = req.body
+
+        let sql = "select * from account where username = ?"
+        let param = [username]
+
+        db.query(sql, param, (e, results, fields) => {
+            if(e){
+                return res.render('error', {message: e.message})
+            }else{
+                if(results.length === 0){
+                    return res.send("Người dùng không tồn tại")
+                }else{
+                    let pwd = results[0].password
+                    bcrypt.compare(pwdOld, pwd)
+                    .then(match => {
+                        if(match){
+                            bcrypt.hash(pwdNew,saltRounds)
+                            .then(hashed => {
+                                let sql1 = "update account set password = ? where username = ?"
+                                let param1 = [hashed, username]
+                                db.query(sql1, param1, (error, resultss, fieldss) => {
+                                    if(error){
+                                        return res.render('error', {message: error.message})
+                                    }else{
+                                        return res.json({code: 0, message: "Đổi mật khẩu thành công"})
+                                    }
+                                })
+                            })
+                            .catch(e => {
+                                console.log(e.msg)
+                            })
+                        }else{
+                            return res.json({code: 1, message: "Mật khẩu không đúng vui lòng nhập lại"})
+                            // return res.send("")
+                        }
+                    })
+                    .catch(e => {
+                        console.log(e.msg)
+                    })
+                }
+            }
+        })
+    }
+
 }
 
 module.exports = new UserController

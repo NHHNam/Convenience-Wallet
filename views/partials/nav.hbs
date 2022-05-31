@@ -1,27 +1,22 @@
+
+
 <nav class="shadow-lg p-3 mb-5 bg-white rounded">
     <div class="container ">
         <div class="row d-flex justify-content-around">
-            <div class="col-lg-6">
-                <ul class="list-nav">
-                    <li class="link-nav"><a href="/users">Home</a></li>
-                    <li class="link-nav"><a href="/users/information">Information</a></li>
-                    <li class="link-nav"><a href="/users/services">Service</a></li>
-                </ul>
+            <div class="col-lg-6" style="text-align: center; line-height: 5">
+                <div class="d-flex justify-content-around">
+                    <a class="link-nav" href="/users">Trang chủ</a>
+                    <a class="link-nav" href="/users/information">Thông tin tài khoản</a>
+                    <a class="link-nav" href="/users/services">Các dịch vụ</a>
+                    <a class="link-nav" href="/users/changePWD">Đổi mật khẩu</a>
+                </div>
 
             </div>
             <div class="col-lg-3" style="text-align: center; line-height: 5">
                 <div>Số dư : {{vnd surplus}}</div>
             </div>
             <div class="col-lg-3" style="text-align: center; line-height: 5">
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {{name}}
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="/logout">Logout</a>
-                    </div>
-                </div>
-
+                <a class="link-nav" href="/logout">Đăng xuất</a>
             </div>
         </div>
 

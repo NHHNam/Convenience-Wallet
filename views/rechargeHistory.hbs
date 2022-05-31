@@ -25,7 +25,7 @@
                 <tr>
                     <td>{{inc @index}}</td>
                     <td>{{type}}</td>
-                    <td><a href="">{{vnd recharge}}</a></td>
+                    <td><a href="/users/services/detailNopRut/{{id}}">{{vnd recharge}}</a></td>
                     <td>{{dateRecharge}}</td>
                     <td>{{timeRecharge}}</td>
                     <td>{{status}}</td>
@@ -35,6 +35,7 @@
     </table>
     <br>
     <h3>Dịch vụ chuyển tiền</h3>
+    <h4>Chuyển</h4>
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -51,7 +52,32 @@
                 <tr>
                     <td>{{inc @index}}</td>
                     <td>Chuyển tiền</td>
-                    <td><a href="">{{vnd money}}</a></td>
+                    <td><a href="/users/services/detailTransfer/{{id}}">{{vnd money}}</a></td>
+                    <td>{{date}}</td>
+                    <td>{{time}}</td>
+                    <td>{{status}}</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <h4>Được chuyển</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Loại</th>
+                <th>Số tiền</th>
+                <th>Ngày</th>
+                <th>Thời gian</th>
+                <th>Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each dataReceived}}
+                <tr>
+                    <td>{{inc @index}}</td>
+                    <td>Chuyển tiền</td>
+                    <td><a href="/users/services/detailTransfer/{{id}}">{{vnd money}}</a></td>
                     <td>{{date}}</td>
                     <td>{{time}}</td>
                     <td>{{status}}</td>

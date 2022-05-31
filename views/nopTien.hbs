@@ -6,43 +6,63 @@
 {{!-- body --}}
 
 <div class="container mb-5 mt-5">
-    <form method="post">
+    <h1 class="brand-object">Nạp tiền</h1>
+    <form method="post" class="shadow-none p-3 mb-5 bg-light rounded">
         <div class="form-group">
             <label for="">Mã thẻ</label>
             {{#if codeCard}}
-            <input type="text" class="form-control" name="codeCard" value="{{codeCard}}">
+            <input type="text" class="form-control" name="codeCard" value="{{codeCard}}" id="codeCard">
             {{else}}
-            <input type="text" class="form-control" name="codeCard">
+            <input type="text" class="form-control" name="codeCard" id="codeCard">
             {{/if}}
         </div>
         <div class="form-group">
             <label for="">Ngày hết hạn</label>
             {{#if expiredCard}}
-            <input type="date" min="2022-05-26" class="form-control" value="{{expiredCard}}" name="expiredCard">
+            <input type="date" min="2022-05-26" class="form-control" value="{{expiredCard}}" name="expiredCard" id="expiredCard">
             {{else}}
-            <input type="date" min="2022-05-26" class="form-control" name="expiredCard">
+            <input type="date" min="2022-05-26" class="form-control" name="expiredCard" id="expiredCard">
             {{/if}}
         </div>
         <div class="form-group">
             <label for="">Mã CVV</label>
             {{#if codeCVV}}
-             <input type="text" class="form-control" name="codeCVV" value="{{codeCVV}}">
+             <input type="text" class="form-control" name="codeCVV" value="{{codeCVV}}" id="codeCVV">
             {{else}}
-             <input type="text" class="form-control" name="codeCVV">
+             <input type="text" class="form-control" name="codeCVV" id="codeCVV">
             {{/if}}
         </div>
         <div class="form-group">
             <label for="">Số tiền nạp</label>
             {{#if recharge}}
-            <input type="text" class="form-control" name="recharge" value="{{recharge}}">
+            <input type="text" class="form-control" name="recharge" value="{{recharge}}" id="recharge">
             {{else}}
-             <input type="text" class="form-control" name="recharge">
+             <input type="text" class="form-control" name="recharge" id="recharge">
             {{/if}}
         </div>
         <div style="color: red; font-weight:500; font-size: 30px;">{{messErr}}</div>
         <div style="color: green; font-weight:500; font-size: 30px;">{{success}}</div>
-        <input type="submit" value="Nạp tiền" id="napBTN" class="bnt btn-success w-100" style="padding: 10px; outline: none; border: none; border-radius: 10px;">
+        <div class="row">
+            <div class="col-lg-6 col-sm-12">
+                <button class="btn btn-info w-100" id="refreshBTN">Làm mới</button>
+            </div>
+
+            <div class="col-lg-6 col-sm-12">
+                <input type="submit" value="Nạp tiền" id="napBTN" class="bnt btn-success w-100" style="padding: 10px; outline: none; border: none; border-radius: 10px;">
+            </div>
+        </div>
     </form>
 </div>
 
 {{!-- end body --}}
+<script>
+    const refreshBTN = document.getElementById('refreshBTN')
+
+    refreshBTN.addEventListener('click', (e) => {
+        e.preventDefault()
+        $('#codeCard').val('')
+        $('#expiredCard').val('')
+        $('#codeCVV').val('')
+        $('#recharge').val('')
+    })
+</script>

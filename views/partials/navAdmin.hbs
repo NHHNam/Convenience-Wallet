@@ -1,19 +1,30 @@
-<div class="row nav-border-admin">
-    <div class="col-lg-8 col-sm-12">
+{{!-- <div class="row nav-border-admin">
+    <div class="col-lg-9 col-sm-12">
         <ul class="list-nav">
             <li class="link-nav"><a href="/admin">Home</a></li>
             <li class="link-nav"><a href="/admin/manage-user">User</a></li>
             <li class="link-nav"><a href="/admin/approve_withdraw_money">Withdraw money</a></li>
         </ul>
     </div>
-    <div class="col-lg-4 col-sm-12" style="padding: 10px 20px;">
-        <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                {{name}}
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="/logout">Logout</a>
+    <div class="col-lg-3  col-sm-12" style="text-align: center; line-height: 5">
+        <a class="link-nav" href="/logout">Đăng xuất</a>
+    </div>
+</div> --}}
+
+<nav class="shadow-lg p-3 mb-5 bg-white rounded">
+    <div class="container ">
+        <div class="row d-flex justify-content-around">
+            <div class="col-lg-9 col-sm-12" style="text-align: center; line-height: 5">
+                <div class="d-flex justify-content-around">
+                    <a class="link-nav" href="/admin">Trang chủ</a>
+                    <a class="link-nav" href="/admin/manage-user">Quản lý tài khoản</a>
+                    <a class="link-nav" href="/admin/approve_withdraw_money">Quản lý các dịch vụ</a>
+                </div>
+
+            </div>
+            <div class="col-lg-3  col-sm-12" style="text-align: center; line-height: 5">
+                <a class="link-nav" href="/logout">Đăng xuất</a>
             </div>
         </div>
     </div>
-</div>
+</nav>

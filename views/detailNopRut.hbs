@@ -1,68 +1,83 @@
+
 {{!-- nav  --}}
+
+{{#if position}}
 {{>navAdmin}}
+{{else}}
+{{>nav}}
+{{/if}}
 {{!-- end nav --}}
 
 {{!-- body --}}
 
 <div class="container mt-5 mb-5">
-    <h2>Danh sách người dùng yêu cầu chuyển tiền </h2>    
-    <small>
-        <a href="/admin/approve_withdraw_money">Back</a>
-    </small>
-    {{#each data}}
-        <div class="form-group">
-            <label for="">Người yêu cầu</label>
-            <h3 class="form-control">{{email}}</h3>
-        </div>
-        <div class="row">
-            <div class="col-lg-4">
-                <div class="form-group">
-                    <label for="">Mã thẻ</label>
-                    <h3 class="form-control">{{numberCard}}</h3>
+    <h2 class="brand-object">Chi tiết Dịch Vụ Nạp, Rút tiền </h2>    
+    <div class="shadow-none p-3 mb-5 bg-light rounded">
+
+        <small>
+            {{#if position}}
+                <a href="/admin/approve_withdraw_money">Back</a>
+            {{else}}
+                <a href="/users/services/history">Back</a>
+            {{/if}}
+        </small>
+        {{#each data}}
+            <div class="form-group">
+                <label for="">Người yêu cầu</label>
+                <h3 class="form-control">{{email}}</h3>
+            </div>
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label for="">Mã thẻ</label>
+                        <h3 class="form-control">{{numberCard}}</h3>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label for="">Ngày hết hạn thẻ</label>
+                        <h3 class="form-control">{{expirationDate}}</h3>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label for="">Mã CVV</label>
+                        <h3 class="form-control">{{codeCVV}}</h3>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-4">
-                <div class="form-group">
-                    <label for="">Ngày hết hạn thẻ</label>
-                    <h3 class="form-control">{{expirationDate}}</h3>
+            <div class="form-group">
+                <label for="">Số tiền yêu cầu</label>
+                <h3 class="form-control">{{vnd recharge}}</h3>
+            </div>
+            <div class="form-group">
+                <label for="">Thời gian yêu cầu</label>
+                <h3 class="form-control">{{timeRecharge}}, {{dateRecharge}}</h3>
+            </div>
+            <div class="form-group">
+                <label for="">Loại yêu cầu</label>
+                <h3 class="form-control">{{type}}</h3>
+            </div>
+            <div class="form-group">
+                <label for="">Ghi chú yêu cầu</label>
+                <textarea readonly class="form-control">{{note}}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="">Tình trạng yêu cầu</label>
+                <h3 class="form-control">{{status}}</h3>
+            </div>
+        {{/each}}
+        <div id="message"></div>
+        {{#if position}}
+            <div class="row">
+                <div class="col-lg-6">
+                    <button class="btn btn-success w-100" data-toggle="modal" data-target="#approve">Đồng ý</button>
+                </div>
+                <div class="col-lg-6">
+                    <button class="btn btn-danger w-100" data-toggle="modal" data-target="#cancel">Từ chối</button>
                 </div>
             </div>
-            <div class="col-lg-4">
-                <div class="form-group">
-                    <label for="">Mã CVV</label>
-                    <h3 class="form-control">{{codeCVV}}</h3>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="">Số tiền yêu cầu</label>
-            <h3 class="form-control">{{vnd recharge}}</h3>
-        </div>
-        <div class="form-group">
-            <label for="">Thời gian yêu cầu</label>
-            <h3 class="form-control">{{timeRecharge}}, {{dateRecharge}}</h3>
-        </div>
-        <div class="form-group">
-            <label for="">Loại yêu cầu</label>
-            <h3 class="form-control">{{type}}</h3>
-        </div>
-        <div class="form-group">
-            <label for="">Ghi chú yêu cầu</label>
-            <textarea readonly class="form-control">{{note}}</textarea>
-        </div>
-        <div class="form-group">
-            <label for="">Tình trạng yêu cầu</label>
-            <h3 class="form-control">{{status}}</h3>
-        </div>
-    {{/each}}
-    <div id="message"></div>
-    <div class="row">
-        <div class="col-lag-6">
-            <button class="btn btn-success" style="width: 330px; margin-right: 30px; margin-bottom: 30px;" data-toggle="modal" data-target="#approve">Đồng ý</button>
-        </div>
-        <div class="col-lag-6">
-            <button class="btn btn-danger" style="width: 330px;" data-toggle="modal" data-target="#cancel">Từ chối</button>
-        </div>
+        {{/if}}
     </div>
 </div>
 

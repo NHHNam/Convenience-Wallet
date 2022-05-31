@@ -1,0 +1,88 @@
+{{!-- nav  --}}
+{{>nav}}
+{{!-- end nav --}}
+
+{{!-- body --}}
+
+<div class="container shadow-sm p-3 mb-5 bg-white rounded mt-5">
+    <small>
+        <a href="/users/login">Back</a>
+    </small>
+    <div style="text-align: center;font-size: 30px;font-weight: 500;">Đổi mật khẩu</div>
+    <div class="form-group">
+        <label for="">Mật khẩu cũ</label>
+        <input type="password" class="form-control" id="pwdOld">
+    </div>
+        <div class="form-group">
+        <label for="">Mật khẩu mới</label>
+        <input type="password" class="form-control" id="pwdNew">
+    </div>
+        <div class="form-group">
+        <label for="">Mật khẩu nhập lại</label>
+        <input type="password" class="form-control" id="pwdConfirm">
+    </div>
+    <div class="form-group">
+        {{#if message}}
+        <p class="error_login">{{message}}</p>
+        {{/if}}
+    </div>
+    <button class="btn_login btn btn-primary w-100" id="btnChangePWD" data-username="{{username}}">Submit</button>
+    <div id="message" style="margin-top: 30px;"></div>
+</div>
+
+<script>
+    $('document').ready(() => {
+        $('#btnChangePWD').click(() => {
+            let pwdOld = $('#pwdOld').val()
+            let pwdNew = $('#pwdNew').val()
+            let pwdConfirm = $('#pwdConfirm').val()
+            let username = $('#btnChangePWD').attr('data-username')
+
+            if(pwdNew !== pwdConfirm){
+                $('#message').css('color', 'red')
+                $('#message').css('font-size', "20px")
+                $('#message').css('font-weight', '500')
+                $('#message').html('Mật khẩu nhập mới và mật khẩu xác minh khác nhau. Nên vui lòng nhập lại')
+                setInterval(() => {
+                    $('#message').html('')
+                }, 3000)
+            }else{
+                let http = new XMLHttpRequest();
+                let url = `http://localhost:5000/users/changePWD/`;
+                let params = `username=${username}&pwdOld=${pwdOld}&pwdNew=${pwdNew}`;
+                http.open('POST', url, true);
+
+                //Send the proper header information along with the request
+                http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+                http.onreadystatechange = function() {//Call a function when the state changes.
+                    if(http.readyState == 4 && http.status == 200) {
+                       let obj = JSON.parse(http.responseText)
+                        if(obj.code === 1){
+                            $('#message').css('color', 'red')
+                            $('#message').css('font-size', "20px")
+                            $('#message').css('font-weight', '500')
+                            $('#message').html(obj.message)
+                            setInterval(() => {
+                                $('#message').html('')
+                            }, 3000)
+                        }else{
+                            $('#message').css('color', 'green')
+                            $('#message').css('font-size', "20px")
+                            $('#message').css('font-weight', '500')
+                            $('#message').html(obj.message)
+                            let pwdOld = $('#pwdOld').val('')
+                            let pwdNew = $('#pwdNew').val('')
+                            let pwdConfirm = $('#pwdConfirm').val('')
+                            setInterval(() => {
+                                $('#message').html('')
+                            }, 3000)
+                        }
+                    }
+                }
+                http.send(params);
+            }
+
+        })
+    })
+</script>
