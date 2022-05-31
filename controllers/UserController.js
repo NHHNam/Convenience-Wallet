@@ -8,8 +8,10 @@ const nodemailer = require('nodemailer')
 const {validationResult} = require('express-validator');
 
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
+    // host: 'smtp.gmail.com',
+    // port: 465,
+    host: process.env.HOSTMAIL,
+    port: process.env.PORTMAIL,
     secure: true,
     service: 'gmail',
     auth: {
@@ -54,6 +56,29 @@ function sendOTP(email, message, req, res){
         }else{
             console.log('Email sent')
             return res.redirect('/users/services/otpTransfer')
+        }
+    })
+}
+
+function sendOTPForget(email, message, req, res){
+    const mailOptions = {
+        from: process.env.EMAIL,
+        to: email,
+        subject: 'OTP cho khôi phục mật khẩu',
+        text: message
+    }
+
+    transporter.sendMail(mailOptions, (err, info) => {
+        if(err){
+            req.session.flash = {
+                type: 'danger',
+                intro: 'Lỗi',
+                message: 'Mail không tồn tại',
+            }
+            return res.redirect('/users/forget')
+        }else{
+            console.log('Email sent')
+            return res.redirect('/users/otpForget')
         }
     })
 }
@@ -851,9 +876,10 @@ class UserController{
     // [POST] /users/services/otpTransfer
     transferMoney(req, res){
         const {otp} = req.body
+        console.log(otp)
         let email = req.session.email
-        let sql = "select * from otpCode where email = ?"
-        let param = [email]
+        let sql = "select * from otpCode where email = ? and status = ?"
+        let param = [email, "đang có"]
         db.query(sql, param, (e, results, fields) => {
             if(e){
                 message = e.message
@@ -861,11 +887,17 @@ class UserController{
             }else{
                 let row = results.reverse()
                 if(parseInt(otp) === parseInt(row[0].otp)){
-                    let moneyTransfer = req.session.moneyTransfer
-                    let noteTransfer = req.session.noteTransfer
-                    let emailReceive = req.session.emailReceive
-                    let fee = req.session.fee
-                    chuyenTien(email, emailReceive, moneyTransfer, noteTransfer, fee, req, res)
+                    db.query('update otpCode set status = ? where id = ?', ["thành công", row[0].id], (e3, res3, f3) => {
+                        if(e3){
+                            return res.render('error', {message: e3.message})
+                        }else{
+                            let moneyTransfer = req.session.moneyTransfer
+                            let noteTransfer = req.session.noteTransfer
+                            let emailReceive = req.session.emailReceive
+                            let fee = req.session.fee
+                            chuyenTien(email, emailReceive, moneyTransfer, noteTransfer, fee, req, res)
+                        }
+                    })
                 }else{
                     req.session.flash = {
                         type: 'danger',
@@ -1315,36 +1347,105 @@ class UserController{
     }
 
     get_forget(req, res) {
-        res.render('forget')
+        req.session.email_forget = null
+        let error = req.session.error_forget
+        res.render('preForget', {error})
     }
 
     // [POST] /users/forget
     post_forget(req, res) {
-        const { email } = req.body
-        db.query("SELECT * FROM account WHERE email = ?", [email], (e, result, fields) => {
-            if (e) return res.render('error', { message: e.message })
-            if (!result) return res.render('forget', { email, message: 'email is not true' })
-
-            db.query("UPDATE account SET password = ? WHERE email = ?", [hashed, email], (e, result, fields) => {
-                if (e) return res.render('error', { message: e.message })
-
-                var transporter = nodemailer.createTransport({
-                    service: 'gmail',
-                    auth: { user: '', pass: '', }
-                });
-
-                transporter.sendMail({
-                    from: '',
-                    to: `${email}`,
-                    subject: '[TB] THÔNG TIN TÀI KHOẢN KHÁCH HÀNG',
-                    html: `<p>Cảm ơn bạn đã tin dùng ví điện tử của chúng tôi, vui lòng không chia sẻ thông tin này đến bất kỳ ai. 
-                    Đây là thông tin tài khoản của bạn:</p><b>Tên khách hàng: </b>${result[0].fullname} <br> 
-                    <b>Số tài khoản: </b>${result[0].username} <br><b>Mật khẩu: </b>${password}<p>Trân trọng ./.</p>`,
-                });
-
-                return res.render('forget', { message: 'Please check your email for information' });
-            })
+        const email = req.body.email
+        req.session.error_forget = null
+        db.query('select * from account where email = ?', [email], (e, res1, f1) => {
+            if(e){
+                return res.render('error', {message: e.message})
+            }else{
+                if(res1.length === 0){
+                    req.session.error_forget = "Email không tồn tại"
+                    res.redirect('/users/forget')
+                }else{
+                    let otp = otpGenerator.generate(4, { digits: true, lowerCaseAlphabets: false, specialChars: false, upperCaseAlphabets:false })
+                    let mess = `Your otp for forget password is ${otp}`
+                    let currentdate = new Date(); 
+                    let date = "" + currentdate.getFullYear() + '-' + (currentdate.getMonth()+1) + '-' + currentdate.getDate()
+                    let time = "" + currentdate.getHours() + ':' + currentdate.getMinutes() + ':' + currentdate.getSeconds()
+                    let sql1 = "insert into otpForget(email, otp, date, time, status) values(?, ?, ?, ?, ?)"
+                    let param1 = [email, otp, date, time, "đang có"]
+                    db.query(sql1, param1, (err, ress, fsss) => {
+                        if(err){
+                            message = err.message
+                            res.render('error', {message})
+                        }else{
+                            req.session.email_forget = email
+                            sendOTPForget(email, mess, req, res)
+                        }
+                    })
+                    
+                }
+            }
         })
+    }
+
+    // [GET] /users/otpForget
+    enterOTPForget(req, res){
+        let error = req.session.error_forget
+        res.render('otpForget', {error})
+    }
+
+    // [POST] /users/otpForget
+    OTPForget(req, res){
+        const {otp} = req.body
+        req.session.error_forget = null
+        let email = req.session.email_forget
+        db.query("select * from otpForget where email = ? and status = ?", [email, "đang có"], (e, results, fields) => {
+            if(e){
+                return res.render('error', {message: e.message})
+            }else{
+                let row = results.reverse()
+                if(parseInt(otp) === parseInt(row[0].otp)){
+                    db.query('update otpForget set status = ? where id = ?', ["thành công", row[0].id], (e1, res1, f1) => {
+                        if(e1){
+                            return res.render('error', {message: e1.message})
+                        }else{
+                            return res.redirect('/users/changePwdForget')
+                        }
+                    })
+                }else{
+                    req.session.error_forget = "Sai mã otp"
+                    return res.redirect('/users/otpForget')
+                }
+            }   
+        })
+    }
+
+    // [GET] /users/changePwdForget
+    preChangePwdForget(req, res){
+        let error = req.session.error_forget
+        return res.render('changePWDForget', {error})
+    }
+
+    // [POST] /users/changePwdForget
+    changePwdForget(req, res){
+        const {pwd, cpwd} = req.body
+        let email = req.session.email_forget
+        if(pwd === cpwd){
+            bcrypt.hash(pwd, saltRounds)
+            .then(hash => {
+                db.query('update account set password = ? where email = ?', [hash, email], (e, res1, f1) => {
+                    if(e){
+                        return res.render('error', {message: e.message})
+                    }else{
+                        return res.redirect('/users/login')
+                    }
+                })
+            })
+            .catch(e => {
+                return res.render('error', {message: e.message})
+            })
+        }else{
+            req.session.error_forget = "Mật khẩu và mật khẩu xác minh không khớp"
+            return res.redirect('/users/changePwdForget')
+        }
     }
 
     // [GET] /users/services/detailNopRut/:id

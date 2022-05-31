@@ -17,6 +17,7 @@
                 <th>Email</th>
                 <th>Address</th>
                 <th>Activated</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -27,6 +28,9 @@
                     <td>{{email}}</td>
                     <td>{{diachi}}</td>
                     <td>{{status}}</td>
+                    <td>
+                        <a href="http://localhost:5000/admin/detailUser/{{email}}">View</a>
+                    </td>
                 </tr>
             {{/each}}
         </tbody>

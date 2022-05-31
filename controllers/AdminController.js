@@ -2,8 +2,10 @@ const db = require('../models/db')
 
 const nodemailer = require('nodemailer')
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
+    // host: 'smtp.gmail.com',
+    // port: 465,
+    host: process.env.HOSTMAIL,
+    port: process.env.PORTMAIL,
     secure: true,
     service: 'gmail',
     auth: {

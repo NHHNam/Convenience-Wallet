@@ -95,4 +95,22 @@ router.get('/changePWD', checkLogin, checkChangePasswordFirst, userController.pr
 // [POST] /users/changePWD
 router.post('/changePWD', checkLogin, checkChangePasswordFirst, userController.changePWD)
 
+// [GET] /users/forget
+router.get('/forget', userController.get_forget)
+
+// [POST] /users/forget
+router.post('/forget', userController.post_forget)
+
+// [GET] /users/otpForget
+router.get('/otpForget', userController.enterOTPForget)
+
+// [POST] /users/otpForget
+router.post('/otpForget', userController.OTPForget)
+
+// [GET] /users/changePwdForget
+router.get('/changePwdForget', userController.preChangePwdForget)
+
+// [POST] /users/changePwdForget
+router.post('/changePwdForget', userController.changePwdForget)
+
 module.exports = router;

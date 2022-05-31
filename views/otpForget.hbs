@@ -1,0 +1,14 @@
+<div id="border_login_page">
+    <form class="login-form" novalidate method="post" >
+        <div class="header_login_form">Mã OTP cho quên mật khẩu</div>
+        <div class="field">
+            <input type="text" class="field-input" name="otp" placeholder="Nhập mã otp của bạn">
+        </div>
+        <div class="field">
+            {{#if error}}
+                <p class="error_login">{{error}}</p>
+            {{/if}}
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Submit</button>
+    </form>
+</div>
