@@ -11,3 +11,6 @@
 #### Admin
 - Active user
 - Manage service
+
+#### Config your account email to test send mail
+- Create file .env and create: EMAIL=YOUR_EMAIL, PASSWORD=YOUR_PASSWORD
